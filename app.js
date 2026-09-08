@@ -13,6 +13,6 @@ const app = express();
 // Launching server on localhost port
 
 app.listen(PORT, () => {
-    console.log('🖥️ Express API server launched on port 8080 🖥️');
+    console.log(`🖥️ Express API server launched on port ${PORT} 🖥️`);
     console.log(`http://localhost:${PORT}/api`);
 })
