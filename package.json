@@ -1,8 +1,11 @@
 {
+  "name": "rss-reader-wep-api-express-server",
+  "version": "1.0.0",
+  "main": "app.js",
   "dependencies": {
-  "express": "^5.2.1"
-},
+    "express": "^5.2.1"
+  },
   "scripts": {
-    "dev" : "node --watch app.js"
+    "dev": "firefox-devedition --new-window http://localhost:8080 & node --watch --env-file=.env app.js"
   }
 }
