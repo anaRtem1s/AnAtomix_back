@@ -10,6 +10,8 @@ accountRouter.route('/')
 
 // DISPLAY ALL ACCOUNTS
 
+// !http://localhost:PORT/api/accounts
+
 .get(authentication(), accountController.getAll)
 
 

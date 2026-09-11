@@ -13,3 +13,7 @@ Node.js - Express.js web (RESTful) API - server
 - Restfox
 
 - Thunder Client
+
+## Swagger JS doc link:
+
+http://localhost:PORT/doc/ // TO DELETE
