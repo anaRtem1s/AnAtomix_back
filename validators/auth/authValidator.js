@@ -6,10 +6,15 @@ const { z } = require('zod');
 
 const RegisterFormSchema = z.object({
     username: z.string()
-        .min(3, 'Username must be at least 3 characters')
-        .max(50, 'Username must be 50 characters max'),
+    .min(3, 'Username must be at least 3 characters')
+    .max(50, 'Username must be 50 characters max'),
     email: z.string().email('Invalid email format').max(255),
-    password: z.string().min(8, 'Password must be at least 8 characters')
+    password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Must contain an uppercase letter')
+    .regex(/[a-z]/, 'Must contain a lowercase letter')
+    .regex(/[0-9]/, 'Must contain a digit')
+    .regex(/[^A-Za-z0-9]/, 'Must contain a special character')
 });
 
 // LOGIN FORM : EMAIL OR USERNAME + PASSWORD
@@ -32,7 +37,7 @@ const LoginFormSchema = z.object({
 function validateBody(schema) {
     return (req, res, next) => {
         const result = schema.safeParse(req.body);
-
+        
         if (result.success) {
             next();
         } else {
