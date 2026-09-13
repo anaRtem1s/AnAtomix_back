@@ -121,6 +121,36 @@ const accountController = {
         catch (err) {
             res.status(500).json({ status: 500, message: 'An error occurred' });
         }
+    },
+
+    update: async (req, res) => {
+        try {
+            const id = req.params.id;
+            
+            
+            const account = await accountService.getById(id);
+
+            if (!account) {
+                return res.status(404).json({ status: 404, message: `No account with ID ${id}, sorry` });
+            }
+
+            const { email, username } = req.body;
+
+            if (!email && !username) {
+                return res.status(400).json({ status: 400, message: 'Email OR username are required' });
+            } else if (username && email) {
+                await accountService.update(id, { username: username, email: email });
+            } else if (username) {
+                await accountService.update(id, { username: username });
+            } else {
+                await accountService.update(id, { email: email });
+            }
+
+            res.status(200).json({ message: 'Account updated' });
+        }
+        catch (err) {
+            res.status(500).json({ status: 500, message: 'An error occurred' });
+        }
     }
 }
 

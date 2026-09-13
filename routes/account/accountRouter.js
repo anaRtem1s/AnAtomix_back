@@ -28,8 +28,6 @@ accountRouter.route('/:id')
   .delete(authentication(), roleAuthorization(['admin', 'self']), accountController.delete) // OK
 
 
-
-
 accountRouter.route('/:id/deactivate')
 
   // DEACTIVATE ONE ACCOUNT (REVERSIBLE BLOCK)  (ADMIN ONLY)
@@ -40,6 +38,12 @@ accountRouter.route('/:id/deactivate')
 
 accountRouter.route('/:id/reactivate')
   .patch(authentication(), roleAuthorization(['admin']), accountController.reactivate)
+
+
+// REACTIVATE ONE ACCOUNT (ADMIN ONLY)
+
+accountRouter.route('/:id/update')
+  .patch(authentication(), roleAuthorization(['admin', 'self']), accountController.update) // Takes a body {username,email} //! NEEDS TO GO THROUGH ZOD VALIDATOR LIKE REGISTER AND ALSO FRONT END VAL
 
 
 module.exports = accountRouter;
