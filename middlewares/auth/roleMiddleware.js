@@ -3,8 +3,8 @@
 
 const accountService = require("../../services/account/accountService")
 
-const roleAuthorization = (roles /* ALLOWED ROLES (member, admin) */) => {
-  
+const roleAuthorization = (roles /* ALLOWED ROLES (member, admin, self) */) => {
+  // Self is a special case, where the role in DB can never take self, but it implies that if the allowed roles do not cover you, then if self is present in this list, you can do actions for your own id
   
   return async (req, res, next) => {
     
@@ -25,8 +25,11 @@ const roleAuthorization = (roles /* ALLOWED ROLES (member, admin) */) => {
       }
       else {
         // IF WE HAVE AN ACCOUNT, WE CHECK THEIR ROLE IS PART OF THE ALLOWED ROLES + CHECKING IF ACCOUNT IS STILL ACTIVE
-        
         if (roles.includes(account.role) && account.is_active) {
+          next();
+        }
+        // IF WE HAVE AN ACCOUNT, AND IF THEIR ROLE IS NOT PART OF THE ALLOWED ROLES + CHECKING IF ACCOUNT IS STILL ACTIVE + THE ID of the operation needs to match the account id
+        else if (!roles.includes(account.role) && roles.includes("self") && account.is_active && accountId == req.params.id) {
           next();
         }
         else {

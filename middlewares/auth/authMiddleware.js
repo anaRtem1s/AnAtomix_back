@@ -39,9 +39,11 @@ const authentication = () => {
     // IF A TOKEN IS PRESENT, VERIFYING ITS VALIDITY
     try {
       
+      //  This will throw an error if the token cannot be verified, that is, its signature fails.
       const payload = await jwtUtils.decode(token);
       
       // STORING PAYLOAD INFO IN THE REQUEST OBJECT SO NEXT MIDDLEWARES OR CONTROLLERS DON'T NEED TO DECODE THE TOKEN AGAIN
+      // In other words, now req contains the account information.
       
       req.account = payload;
       
@@ -49,11 +51,11 @@ const authentication = () => {
       
       next();
       
-    }
-    
-    catch(err){
+    } catch(err){
       
       // INVALID OR EXPIRED TOKEN -> 401
+      // Expired means of course that the token is too old.
+      // But another possibility is that there was tampering on the token.
       
        res.status(401).json({ status : 401, message : 'You must be logged in to access this ressource'})
     }

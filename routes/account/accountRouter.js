@@ -6,35 +6,40 @@ const roleAuthorization = require("../../middlewares/auth/roleMiddleware.js");
 
 const accountRouter = require("express").Router();
 
+
+// !http://localhost:PORT/api/accounts 
+
+
 accountRouter.route('/')
 
-// DISPLAY ALL ACCOUNTS
+  // DISPLAY ALL ACCOUNTS
 
-// !http://localhost:PORT/api/accounts
-
-.get(authentication(), accountController.getAll)
+  .get(authentication(), roleAuthorization(['admin']), accountController.getAll)
 
 
 accountRouter.route('/:id')
 
-// DISPLAY ONE ACCOUNT BY THEIR ID
+  // DISPLAY ONE ACCOUNT BY THEIR ID 
 
-.get(authentication(), accountController.getById)
+  .get(authentication(), roleAuthorization(['admin', 'self']), accountController.getById) // OK - authentication needs to happen BEFORE roleauthorization
 
-// DELETE ONE ACCOUNT BY THEIR ID
+  // DELETE ONE ACCOUNT BY THEIR ID 
 
-.delete(authentication(), roleAuthorization(['admin']), accountController.delete) // authentication needs to happen BEFORE roleauthorization
+  .delete(authentication(), roleAuthorization(['admin', 'self']), accountController.delete) // OK
 
 
-// DEACTIVATE ONE ACCOUNT (REVERSIBLE BLOCK) - ADMIN ONLY
+
 
 accountRouter.route('/:id/deactivate')
-.patch(authentication(), roleAuthorization(['admin']), accountController.deactivate)
 
-// REACTIVATE ONE ACCOUNT - ADMIN ONLY
+  // DEACTIVATE ONE ACCOUNT (REVERSIBLE BLOCK)  (ADMIN ONLY)
+
+  .patch(authentication(), roleAuthorization(['admin']), accountController.deactivate) // OK
+
+// REACTIVATE ONE ACCOUNT (ADMIN ONLY)
 
 accountRouter.route('/:id/reactivate')
-.patch(authentication(), roleAuthorization(['admin']), accountController.reactivate)
+  .patch(authentication(), roleAuthorization(['admin']), accountController.reactivate)
 
 
 module.exports = accountRouter;

@@ -69,6 +69,9 @@ const accountController = {
             res.status(500).json({ status : 500, message : 'An error occured'});
         }
     },
+
+    //!TO CHECK
+    
     deactivate: async (req, res) => {
         try {
             const id = req.params.id;

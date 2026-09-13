@@ -109,7 +109,8 @@ const authController = {
             const { id, role } = accountAdded;
 
             // 201 : CREATED
-
+            // Here success is reported of account creation, which is fine. But it might be useful to already send back a token so that the user doesn't have to login after registration.
+            // There is possibly a good reason not to do this to make sure the user by doing all kinds of stuff in the app forgets the password, and so a login after create might reinforce their memory.
             res.status(201).json({ id, username, email, role });
         }
         catch (err) {
@@ -147,24 +148,20 @@ const authController = {
                 return res.status(403).json({ status: 403, message: 'This account has been deactivated' });
             }
 
-
             // IF MATCH : SEND BACK INFOS ON ACCOUNT [+ TOKEN]
-
-            else {
-
-                // GENERATING TOKEN WITH UTILS FILE
-
-                const token = await jwtUtils.generate(accountFound);
-
-                res.status(200).json({
-                    token: token,
-                    account: {
-                        id: accountFound.id,
-                        username: accountFound.username,
-                        role: accountFound.role
-                    }
-                });
-            }
+            // GENERATING TOKEN WITH UTILS FILE
+            // The token which is generated contains the account info. You cannot alter this info, since the info is signed by the server.
+            // Should you meddle with the token, the server will know and anything done with that token will not be accepted.
+            const token = await jwtUtils.generate(accountFound);
+            // This token is now send back to the client so that it can be used for all next things the user wants to do via other controllers.
+            res.status(200).json({
+                token: token,
+                account: {
+                    id: accountFound.id,
+                    username: accountFound.username,
+                    role: accountFound.role
+                }
+            });
 
         }
         catch (err) {
