@@ -1,8 +1,11 @@
 // ONE ROUTE PER FEATURE - EVERY ROUTE REDIRECTS TO MAIN ENTRYPOINT:ROUTE (= INDEX.JS)
 
 const accountController = require("../../controllers/account/accountController.js");
+
 const authentication = require("../../middlewares/auth/authMiddleware.js");
 const roleAuthorization = require("../../middlewares/auth/roleMiddleware.js");
+
+const authValidator = require ("../../validators/auth/authValidator.js");
 
 const accountRouter = require("express").Router();
 
@@ -28,28 +31,29 @@ accountRouter.route('/:id')
   .delete(authentication(), roleAuthorization(['admin', 'self']), accountController.delete) // OK
 
 
+accountRouter.route('/:id/update')
+
+  // UPDATE ONE ACCOUNT 
+
+  .patch(authentication(), roleAuthorization(['admin', 'self']), authValidator.validateUpdateAccountForm, accountController.update) // Takes a body {username,email, password} 
+
+
 accountRouter.route('/:id/deactivate')
 
   // DEACTIVATE ONE ACCOUNT (REVERSIBLE BLOCK)  (ADMIN ONLY)
 
   .patch(authentication(), roleAuthorization(['admin']), accountController.deactivate) // OK
 
-// REACTIVATE ONE ACCOUNT (ADMIN ONLY)
 
 accountRouter.route('/:id/reactivate')
-  .patch(authentication(), roleAuthorization(['admin']), accountController.reactivate)
 
+  // REACTIVATE ONE ACCOUNT (REVERSIBLE BLOCK) (ADMIN ONLY)
 
-// REACTIVATE ONE ACCOUNT (ADMIN ONLY)
+  .patch(authentication(), roleAuthorization(['admin']), accountController.reactivate) // OK
 
-accountRouter.route('/:id/update')
-  .patch(authentication(), roleAuthorization(['admin', 'self']), accountController.update) // Takes a body {username,email} //! NEEDS TO GO THROUGH ZOD VALIDATOR LIKE REGISTER AND ALSO FRONT END VAL
 
 
 module.exports = accountRouter;
-
-
-
 
 
 
