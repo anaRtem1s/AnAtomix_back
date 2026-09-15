@@ -2,7 +2,7 @@
 
 // CONTROLLER IS AN OBJECT CONTAINING SEVERAL FUNCTIONS (= FEATURES)
 
-const authService = require("../../services/auth/authService");  
+const authService = require("../../services/auth/authService");
 
 // PSSWD HASH TOOL
 
@@ -124,6 +124,8 @@ const authController = {
     login: async (req, res) => {
         try {
             const { email, username, password } = req.body;
+
+            console.log("LOGIN REQUEST:", { email, username, password });
 
             if ((!email && !username) || !password) {
                 return res.status(400).json({ status: 400, message: 'Email OR username, and password, are required' });

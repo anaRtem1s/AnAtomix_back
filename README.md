@@ -4,15 +4,14 @@ RSS & Atom feed aggregator - web app (JavaScript Full Stack web dev school proje
 
 Node.js - Express.js web (RESTful) API - server
 
-## [To determine] API client: 
+## API client: 
 
-- Yaak
-- Bruno
 
-- Hoppscotch
-- Restfox
+- Bruno + Thunder Client
 
-- Thunder Client
+## Dev environment:
+
+- Browser : Firefox Developer Edition
 
 ## Swagger JS doc link:
 

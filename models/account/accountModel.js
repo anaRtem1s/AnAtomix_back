@@ -20,7 +20,7 @@ const accountBuilder = (sequelize) => {
       username : {
         type : DataTypes.STRING(50),
         allowNull : false,
-        unique: 'UK_account_Username'
+        unique : 'UK_account_Username'
       },
       email : {
         type : DataTypes.STRING(255),

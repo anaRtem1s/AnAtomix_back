@@ -54,8 +54,7 @@ const authentication = () => {
     } catch(err){
       
       // INVALID OR EXPIRED TOKEN -> 401
-      // Expired means of course that the token is too old.
-      // But another possibility is that there was tampering on the token.
+      // Expired = the token is too old OR there was tampering on the token.
       
        res.status(401).json({ status : 401, message : 'You must be logged in to access this ressource'})
     }
