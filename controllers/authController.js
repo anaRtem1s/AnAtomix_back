@@ -2,7 +2,7 @@
 
 // CONTROLLER IS AN OBJECT CONTAINING SEVERAL FUNCTIONS (= FEATURES)
 
-const authService = require("../../services/auth/authService");
+const authService = require("../services/authService.js");
 
 // PSSWD HASH TOOL
 
@@ -10,7 +10,7 @@ const argon2 = require('argon2');
 
 // AUTH TOKEN GENERATION TOOL
 
-const jwtUtils = require("../../services/auth/utils/jwtUtils");
+const jwtUtils = require("../services/auth/utils/jwtUtils");
 
 const authController = {
     /**

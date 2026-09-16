@@ -1,4 +1,4 @@
-const db = require("../../models/configDB");
+const db = require("../models/configDB");
 
 const accountService = {
 

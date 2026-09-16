@@ -1,7 +1,7 @@
 // ROLE AUTHORIZATION MIDDLEWARE - CHECKS IF THE CONNECTED ACCOUNT HAS AN ALLOWED ROLE
 // MUST BE PLACED AFTER authentication() IN THE ROUTE (IT READS req.account)
 
-const accountService = require("../../services/account/accountService")
+const accountService = require("../services/accountService")
 
 const roleAuthorization = (roles /* ALLOWED ROLES (member, admin, self) */) => {
   // Self is a special case, where the role in DB can never take self, but it implies that if the allowed roles do not cover you, then if self is present in this list, you can do actions for your own id

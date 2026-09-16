@@ -1,0 +1,112 @@
+-- ACCOUNT
+CREATE TABLE IF NOT EXISTS account (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  passwordhash VARCHAR(255) NOT NULL,
+  creationdate TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  CONSTRAINT uk_username UNIQUE (username),
+  CONSTRAINT uk_email UNIQUE (email)
+);
+--INSERT INTO account (username, email, passwordhash) VALUES ('anartemis', 'anartemis@rssapp.be', 'a7f3b2c9e4d84b21f6e09c5d813f7a24b09c65e3f8d214a70cb3965edf184a20');
+--INSERT INTO account (username, email, passwordhash) VALUES ('apolo', 'apolo@rssapp.com', 'f42d8a91c763b0e5a4df2918ce07b36f8a15d92c4e73fb6012ac8de93b746f18');
+
+-- FEED SOURCE
+CREATE TABLE IF NOT EXISTS feed_source (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  feed_url VARCHAR(2048) NOT NULL,
+  feed_type VARCHAR(8) NOT NULL,
+  title VARCHAR(256) NOT NULL,
+  descr TEXT,
+  site_url VARCHAR(2048),
+  
+  CONSTRAINT uk_feed_source_feed_url UNIQUE (feed_url),
+  CONSTRAINT ck_feed_source_feed_type CHECK (feed_type IN ('rss', 'atom'))
+);
+
+-- CATEGORY
+CREATE TABLE IF NOT EXISTS category (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  title VARCHAR(256) NOT NULL,
+  account_id INT NOT NULL,
+
+  CONSTRAINT fk_category_account_id FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
+  CONSTRAINT uk_category_account_title UNIQUE (account_id, title)
+);
+CREATE INDEX IF NOT EXISTS idx_category_account_id ON category (account_id);
+
+-- TAG
+CREATE TABLE IF NOT EXISTS tag (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  title VARCHAR(256) NOT NULL,
+  color VARCHAR(32),
+  account_id INT NOT NULL,
+
+  CONSTRAINT fk_tag_account FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
+  CONSTRAINT uk_tag_account_title UNIQUE (account_id, title)
+);
+CREATE INDEX IF NOT EXISTS idx_tag_account_id ON tag (account_id);
+
+-- SUBSCRIPTION
+CREATE TABLE IF NOT EXISTS subscription (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  subscribed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  account_id INT NOT NULL,
+  feed_source_id INT NOT NULL,
+  category_id INT NOT NULL,
+
+  CONSTRAINT fk_subscription_account FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
+  CONSTRAINT fk_subscription_feed_source FOREIGN KEY (feed_source_id) REFERENCES feed_source (id) ON DELETE CASCADE,
+  CONSTRAINT fk_subscription_category FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE SET DEFAULT,
+  CONSTRAINT uk_subscription_account_feed_source UNIQUE (account_id, feed_source_id)
+);
+CREATE INDEX IF NOT EXISTS idx_subscription_account_id ON subscription (account_id);
+CREATE INDEX IF NOT EXISTS idx_subscription_feed_source_id ON subscription (feed_source_id);
+CREATE INDEX IF NOT EXISTS idx_subscription_category_id ON subscription (category_id);
+
+-- FEED ARTICLE
+CREATE TABLE IF NOT EXISTS feed_article (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  guid VARCHAR(500) NOT NULL,
+  link VARCHAR(2048) NOT NULL,
+  title VARCHAR(1000) NOT NULL,
+  summary TEXT,
+  content_html TEXT,
+  author VARCHAR(500),
+  published_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ,
+  feed_source_id INT NOT NULL,
+
+  CONSTRAINT fk_feed_article_feed_source FOREIGN KEY (feed_source_id) REFERENCES feed_source (id) ON DELETE CASCADE,
+  CONSTRAINT uk_feed_article_feed_source_guid UNIQUE (feed_source_id, guid)
+);
+CREATE INDEX IF NOT EXISTS idx_feed_article_feed_source_id ON feed_article (feed_source_id);
+CREATE INDEX IF NOT EXISTS idx_feed_article_published_at ON feed_article (published_at);
+
+-- ACCOUNT ARTICLE READ
+CREATE TABLE IF NOT EXISTS mm_account_article (
+  account_id INT NOT NULL,
+  article_id INT NOT NULL,
+  read_at TIMESTAMPTZ,
+  is_favorite BOOLEAN NOT NULL DEFAULT false,
+
+  CONSTRAINT pk_mm_account_article PRIMARY KEY (account_id, article_id),
+  CONSTRAINT fk_mm_account_article_account FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
+  CONSTRAINT fk_mm_account_article_article FOREIGN KEY (article_id) REFERENCES feed_article (id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_mm_account_article_account_id ON mm_account_article (account_id);
+CREATE INDEX IF NOT EXISTS idx_mm_account_article_article_id ON mm_account_article (article_id);
+
+-- ARTICLE TAG
+CREATE TABLE IF NOT EXISTS mm_article_tag (
+  article_id INT NOT NULL,
+  tag_id INT NOT NULL,
+  assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+  CONSTRAINT pk_mm_article_tag PRIMARY KEY (article_id, tag_id),
+  CONSTRAINT fk_mm_article_tag_article FOREIGN KEY (article_id) REFERENCES feed_article (id) ON DELETE CASCADE,
+  CONSTRAINT fk_mm_article_tag_tag FOREIGN KEY (tag_id) REFERENCES tag (id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_mm_article_tag_article_id ON mm_article_tag (article_id);
+CREATE INDEX IF NOT EXISTS idx_mm_article_tag_tag_id ON mm_article_tag (tag_id);

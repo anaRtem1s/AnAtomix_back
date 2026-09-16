@@ -1,6 +1,6 @@
 const { Request, Response } = require('express')
 
-const jwtUtils = require("../../services/auth/utils/jwtUtils.js"); 
+const jwtUtils = require("../services/auth/utils/jwtUtils.js"); 
 
 const authentication = () => {
   

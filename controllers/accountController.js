@@ -2,8 +2,7 @@
 
 // CONTROLLER IS AN OBJECT CONTAINING SEVERAL FUNCTIONS (= FEATURES)
 
-
-const accountService = require("../../services/account/accountService");
+const accountService = require("../services/accountService.js");
 
 // PSSWD HASH TOOL IF USER CHANGES IT
 

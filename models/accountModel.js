@@ -1,7 +1,5 @@
 // COMMUNICATION BACKEND - DATABASE WITH SEQUELIZE ORM
-
 const { Sequelize, DataTypes } = require("sequelize");
-
 
 /**
 * account Builder
@@ -11,25 +9,25 @@ const accountBuilder = (sequelize) => {
   const account = sequelize.define(
     'account',
     {
-      id : {
-        type : DataTypes.INTEGER,
-        primaryKey : true,
-        autoIncrement : true,
-        autoIncrementIdentity : true
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        autoIncrementIdentity: true
       },
-      username : {
-        type : DataTypes.STRING(50),
-        allowNull : false,
-        unique : 'UK_account_Username'
+      username: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        unique: 'UK_account_Username'
       },
-      email : {
-        type : DataTypes.STRING(255),
-        allowNull : false,
-        unique : 'UK_account_Email'
+      email: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+        unique: 'UK_account_Email'
       },
-      passwordhash : {
-        type : DataTypes.STRING(255),
-        allowNull : false
+      passwordhash: {
+        type: DataTypes.STRING(255),
+        allowNull: false
       },    
       creationdate: { type: 'TIMESTAMPTZ', defaultValue: sequelize.literal('NOW()') 
       },
@@ -46,12 +44,11 @@ const accountBuilder = (sequelize) => {
       },
     },
     {
-      tableName : 'account',
+      tableName: 'account',
       timestamps: false
     }
-  )
-  
+  );
   return account;
-}
+};
 
 module.exports = accountBuilder;

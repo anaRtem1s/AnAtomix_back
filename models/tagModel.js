@@ -1,11 +1,12 @@
+// COMMUNICATION BACKEND - DATABASE WITH SEQUELIZE ORM
 const { Sequelize, DataTypes } = require("sequelize");
 
 /**
- * Tag Builder
+ * tag Builder
  * @param { Sequelize } sequelize
  */
 const tagBuilder = (sequelize) => {
-  const Tag = sequelize.define(
+  const tag = sequelize.define(
     'tag',
     {
       id: {
@@ -14,22 +15,23 @@ const tagBuilder = (sequelize) => {
         autoIncrement: true,
         autoIncrementIdentity: true
       },
-      name: {
-        type: DataTypes.STRING(255),
+      title: {
+        type: DataTypes.STRING(256),
         allowNull: false
       },
       color: {
-        type: DataTypes.STRING(7),    // e.g. "#3366ff"
+        type: DataTypes.STRING(32), // e.g., "#3366ff", "rgba(10,12,50,255)"
         allowNull: true
       }
-      // account_id -> associations step. UNIQUE(account_id, name) enforced by the DB.
+      // FK account_id is added in the ASSOCIATIONS step (configDB.js).
+      // UNIQUE(account_id, title) is enforced by the database.
     },
     {
       tableName: 'tag',
       timestamps: false
     }
   );
-  return Tag;
+  return tag;
 };
 
 module.exports = tagBuilder;

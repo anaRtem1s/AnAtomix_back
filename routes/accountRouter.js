@@ -1,11 +1,9 @@
 // ONE ROUTE PER FEATURE - EVERY ROUTE REDIRECTS TO MAIN ENTRYPOINT:ROUTE (= INDEX.JS)
 
-const accountController = require("../../controllers/account/accountController.js");
-
-const authentication = require("../../middlewares/auth/authMiddleware.js");
-const roleAuthorization = require("../../middlewares/auth/roleMiddleware.js");
-
-const authValidator = require ("../../validators/auth/authValidator.js");
+const accountController = require("../controllers/accountController.js");
+const authentication = require("../middlewares/authMiddleware.js");
+const roleAuthorization = require("../middlewares/roleMiddleware.js");
+const authValidator = require ("../validators/authValidator.js");
 
 const accountRouter = require("express").Router();
 
