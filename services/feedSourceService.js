@@ -1,28 +1,27 @@
-const db = require("../../models/configDB.js");
+const db = require("../models/configDB.js");
 
 const feedSourceService = {
 
-  //! TO TEST FIND ALL FEED SOURCES (CATALOGUE GLOBAL)
+  // FIND ALL FEED SOURCES (GLOBAL CATALOGUE)
 
   getAll: async () => {
     try {
-      const feedSources = await db.feedSource.findAll(
-        { attributes: ['id', 'feed_url', 'site_url', 'title', 'description', 'feed_type', 'active'] });
-
-      return feedSources;
+        const feedSources = await db.feedSource.findAll(
+            { attributes: ['id', 'feed_url', 'feed_type', 'title', 'descr', 'site_url'] });
+        return feedSources;
     }
     catch (err) {
       throw new Error(err.message);
     }
   },
 
-  // FIND ONE FEED SOURCE BY ID
+  // FIND A FEED SOURCE BY ID
 
   getById: async (id) => {
     try {
 
-      const feedSourceFound = await db.feedSource.findByPk(id, { attributes: ['id', 'feed_url', 'site_url', 'title', 'description', 'feed_type', 'active', 'last_fetched_at'] });
-      
+      const feedSourceFound = await db.feedSource.findByPk(id, { attributes: ['id', 'feed_url', 'feed_type', 'title', 'descr', 'site_url'] });
+
       return feedSourceFound;
     }
     catch (err) {
@@ -31,27 +30,27 @@ const feedSourceService = {
   },
 
 
-  // CREATE A NEW FEED SOURCE
+  // CREATE A FEED SOURCE
 
-  async create(data) {
-    const feedSource = await db.feedSource.create({
-      feed_url: data.feed_url,
-      site_url: data.site_url || null,
-      title: data.title,
-      description: data.description || null,
-      feed_type: data.feed_type || 'rss',
-      active: true,
-      fetch_error_count: 0
-    });
+  create: async (feedSourceToCreate) => {
+    try {
 
-    return feedSource;
+      const feedSourceCreated = await db.feedSource.create(feedSourceToCreate);
+
+      return feedSourceCreated;
+    }
+    catch (err) {
+
+      throw new Error(err.message);
+    }
   },
+
 
   // DELETE FEED SOURCE
 
   delete: async (id) => {
     try {
-      const [deletedRow] = await db.feedSource.destroy({ where: { id } });
+      const deletedRow = await db.feedSource.destroy({ where: { id } });
 
       if (deletedRow === 1) {
         return true;
@@ -61,7 +60,7 @@ const feedSourceService = {
       }
     }
     catch (err) {
-      throw new Error(err.message);
+      throw err;
     }
   },
 

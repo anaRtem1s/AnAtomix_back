@@ -1,13 +1,12 @@
 # Description of the project
 
-RSS & Atom feed aggregator - web app (JavaScript Full Stack web dev school project) :: Back-end code
+AnAtomix: An RSS & Atom feed aggregator - web app (JavaScript Full Stack web dev school project) :: Back-end code
 
 Node.js - Express.js web (RESTful) API - server
 
 ## API client: 
 
-
-- Bruno + Thunder Client
+- Bruno 
 
 ## Dev environment:
 

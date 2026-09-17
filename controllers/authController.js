@@ -2,7 +2,7 @@
 
 // CONTROLLER IS AN OBJECT CONTAINING SEVERAL FUNCTIONS (= FEATURES)
 
-const authService = require("../services/authService.js");
+const authService = require("../services/auth/authService.js");
 
 // PSSWD HASH TOOL
 

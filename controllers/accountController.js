@@ -19,7 +19,7 @@ const accountController = {
 
         }
         catch (err) {
-            res.status(500).json({ status: 500, message: 'An error occured' });
+            res.status(500).json({ status: 500, message: 'A server error occured 🐾' + err });
         }
     },
 
@@ -39,7 +39,7 @@ const accountController = {
             }
         }
         catch (err) {
-            res.status(500).json({ status: 500, message: 'An error occured' });
+            res.status(500).json({ status: 500, message: 'A server error occured 🐾' + err });
         }
     },
 
@@ -70,7 +70,7 @@ const accountController = {
             }
         }
         catch (err) {
-            res.status(500).json({ status: 500, message: 'An error occured' });
+            res.status(500).json({ status: 500, message: 'A server error occured while deleting your account 🐾' + err });
         }
     },
 
@@ -91,6 +91,7 @@ const accountController = {
             }
 
             // GUARD : un admin ne peut pas se désactiver lui-même
+
             if (req.account && req.account.id === account.id) {
                 return res.status(403).json({ status: 403, message: 'You cannot deactivate your own account' });
             }
@@ -100,7 +101,7 @@ const accountController = {
             res.status(200).json({ message: 'Account deactivated' });
         }
         catch (err) {
-            res.status(500).json({ status: 500, message: 'An error occurred' });
+            res.status(500).json({ status: 500, message: 'A server error occured while deactivating the account 🐾' + err });
         }
     },
 
@@ -125,11 +126,11 @@ const accountController = {
             res.status(200).json({ message: 'Account reactivated' });
         }
         catch (err) {
-            res.status(500).json({ status: 500, message: 'An error occurred' });
+            res.status(500).json({ status: 500, message: 'A server error occured while reactivating the account 🐾' + err });
         }
     },
 
-    //!  TESTER
+    //  UPDATE ONE ACCOUNT BY ITS ID
 
     update: async (req, res) => {
         try {
@@ -161,13 +162,13 @@ const accountController = {
 
                 await accountService.update(id, { username, email });
 
-            } else if (username && newPassword) { 
+            } else if (username && newPassword) {
 
                 const passwordhash = await argon2.hash(newPassword); // HASHING NEW PSSWD
 
                 await accountService.update(id, { username, passwordhash }); // USING NOW HASHED PSSWD
 
-            } else if (email && newPassword) { 
+            } else if (email && newPassword) {
 
                 const passwordhash = await argon2.hash(newPassword); // HASHING NEW PSSWD
 
@@ -181,7 +182,7 @@ const accountController = {
 
                 await accountService.update(id, { email });
 
-            } else if (newPassword) { 
+            } else if (newPassword) {
 
                 const passwordhash = await argon2.hash(newPassword); // HASHING NEW PSSWD
 
@@ -191,7 +192,7 @@ const accountController = {
             res.status(200).json({ message: 'Account updated' });
         }
         catch (err) {
-            res.status(500).json({ status: 500, message: 'An error occurred' });
+            res.status(500).json({ status: 500, message: 'A server error occured while updating your account 🐾' + err });
         }
     }
 }

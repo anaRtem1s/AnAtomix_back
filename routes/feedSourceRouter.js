@@ -1,18 +1,21 @@
+// ONE ROUTE PER FEATURE - EVERY ROUTE REDIRECTS TO MAIN ENTRYPOINT:ROUTE (= INDEX.JS)
 
 const feedSourceController = require("../controllers/feedSourceController.js");
 const authentication = require("../middlewares/authMiddleware.js");
 const roleAuthorization = require("../middlewares/roleMiddleware.js");
-const feedSourceValidator = require("../../validators/feedSourceValidator.js");
+
+//! TO DO + ADD TO ROUTES
+// const feedSourceValidator = require("../../validators/feedSourceValidator.js"); 
 
 const feedSourceRouter = require("express").Router();
 
-// ! http://localhost:PORT/api/feed_sources
+//? http://localhost:PORT/api/feed_sources
 
 feedSourceRouter.route('/')
-  .get(authentication(), roleAuthorization(['member', 'admin']), feedSourceController.getAll)
-  .post(authentication(), roleAuthorization(['member', 'admin']), feedSourceController.create)
+  .get(authentication(), roleAuthorization(['member','admin']), feedSourceController.getAll)
+  .post(authentication(), roleAuthorization(['member','admin']), feedSourceController.create)
 
-// ! http://localhost:PORT/api/feed_sources/:id
+//? http://localhost:PORT/api/feed_sources/:id
 
 feedSourceRouter.route('/:id')
   .get(authentication(), roleAuthorization(['member', 'admin']), feedSourceController.getById)

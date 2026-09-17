@@ -14,4 +14,10 @@ router.use('/accounts', accountRouter)
 const feedSourceRouter = require("./feedSourceRouter.js");
 router.use('/feed_sources', feedSourceRouter)
 
+const categoryRouter = require("./categoryRouter.js");
+router.use('/categories', categoryRouter)
+
+const tagRouter = require("./tagRouter.js");
+router.use('/tags', tagRouter)
+
 module.exports = router;

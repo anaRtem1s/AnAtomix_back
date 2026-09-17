@@ -1,4 +1,4 @@
-const db = require("../models/configDB");
+const db = require("../models/configDB.js");
 
 const accountService = {
 
@@ -31,9 +31,9 @@ const accountService = {
 
     delete: async (id) => {
         try {
-            const deletedRows = await db.account.destroy({ where: { id } });
+            const deletedRow = await db.account.destroy({ where: { id } });
 
-            if (deletedRows === 1) {
+            if (deletedRow === 1) {
                 return true;
             }
             else {
@@ -49,11 +49,11 @@ const accountService = {
 
     update: async (id, changes) => {
         try {
-            const [updatedRows] = await db.account.update(changes, { where: { id: id } });
+            const [updatedRow] = await db.account.update(changes, { where: { id: id } });
 
             // RETURN TRUE IF AT LEAST ONE ROW WAS MODIFIED
 
-            return updatedRows === 1;
+            return updatedRow === 1;
         }
         catch (err) {
             throw new Error(err.message);

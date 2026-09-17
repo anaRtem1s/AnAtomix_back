@@ -1,142 +1,155 @@
+// REQUEST HANDLING LOGIC - ONE CONTROLLER PER RESSOURCE  - CONTROLLER EXTRACTS WHAT IT NEEDS FROM THE REQUEST - IT CALLS FUNCTION(S) FROM THE ACCOUNTSERVICE. IT SENDS BACK THE CORRECT CODES WITH THE DATA.
+
+// CONTROLLER IS AN OBJECT CONTAINING SEVERAL FUNCTIONS (= FEATURES) 
+
 const categoryService = require("../services/categoryService.js");
 
 const categoryController = {
 
-  // GET ALL CATEGORIES OF ACCOUNT (belongs to the account in URL)
-  //! GET	/api/accounts/:id/categories	
-  async getAll(req, res) {
+  // GET ALL CATEGORIES 
+
+  //? GET	/api/categories
+
+  getAll: async (req, res) => {
     try {
-      const targetAccountId = parseInt(req.params.id);
-      const myAccountId = req.account.id;
-      const isAdmin = req.account.role === 'admin';
-
-      // Member: MUST use their own account ID
-      if (!isAdmin && targetAccountId !== myAccountId) {
-        return res.status(403).json({ status: 403, message: "You can only access your own categories" });
-      }
-
-      const categories = await categoryService.findAllByAccount(targetAccountId, isAdmin);
-      return res.json({ status: 200, data: categories });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ status: 500, message: "Server error while fetching categories" });
+      const categories = await categoryService.getAll(req.account.id);
+      res.status(200).json(categories);
     }
-  }
+    catch (err) {
+      res.status(500).json({ status: 500, message: 'A server error occured while fetching categories 🐾' + err });
+    }
+  },
 
-  // GET ONE CATEGORY OF ACCOUNT (belongs to the account in URL)
-  //! GET	/api/accounts/:id/categories/:categoryId	
-  async getById(req, res) {
+  // GET A CATEGORY BY ITS ID
+
+  //? GET	/api/categories/:id
+
+  getById: async (req, res) => {
     try {
-      const categoryId = parseInt(req.params.categoryId);
-      const targetAccountId = parseInt(req.params.id);
-      const myAccountId = req.account.id;
-      const isAdmin = req.account.role === 'admin';
+      const id = req.params.id;
 
-      // Member: MUST use their own account ID in URL
-      if (!isAdmin && targetAccountId !== myAccountId) {
-        return res.status(403).json({ status: 403, message: "You can only access your own categories" });
+      const category = await categoryService.getById(id);
+
+      if (!category || category.account_id !== req.account.id) {
+        res.status(404).json({ status: 404, message: `No category with ID ${id}, sorry` })
+      }
+      else {
+        res.status(200).json(category);
+      }
+    }
+    catch (err) {
+      res.status(500).json({ status: 500, message: 'A server error occured while fetching category 🐾' + err });
+    }
+  },
+
+
+  // CREATE A CATEGORY 
+
+  //? POST	/api/categories/
+
+  create: async (req, res) => {
+    try {
+
+      const { title } = req.body;
+
+      //? CHECKING MANDATORY FIELDS - CHECK FOR MANDATORY account_id?
+
+      if (!title) {
+        return res.status(400).json({ status: 400, message: 'Category title is required' });
       }
 
-      const category = await categoryService.findById(categoryId, targetAccountId, isAdmin);
+      const category = await categoryService.create(
+        {
+          account_id: req.account.id,
+          title
+        });
 
       if (!category) {
-        return res.status(404).json({ status: 404, message: "Category not found or you don't have permission" });
+        return res.status(404).json({ status: 404, message: `Could not create category, sorry` });
       }
 
-      return res.json({ status: 200, data: category });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ status: 500, message: "Server error while fetching category" });
+      category.message = 'Category created';
+      res.status(200).json({ message: 'Category created', 'attributes': category });
     }
-  }
-
-  // CREATE ONE CATEGORY OF ACCOUNT (belongs to the account in URL)
-  //! POST	/api/accounts/:id/categories	
-  async create(req, res) {
-    try {
-      const { name } = req.body;
-      const accountId = parseInt(req.params.id);
-      const myAccountId = req.account.id;
-
-      // Member: MUST create in their own account
-      if (accountId !== myAccountId) {
-        return res.status(403).json({ status: 403, message: "You can only create categories in your own account" });
-      }
-
-      const category = await categoryService.create(name, accountId);
-      return res.status(201).json({ status: 201, message: "Category created", data: category });
-    } catch (err) {
-      console.error(err);
-      if (err.name === 'SequelizeUniqueConstraintError') {
-        return res.status(409).json({ status: 409, message: "Category name already exists for this account" });
-      }
-      return res.status(500).json({ status: 500, message: "Server error while creating category" });
+    catch (err) {
+      res.status(500).json({ status: 500, message: 'A server error occured while creating category 🐾: ' + err });
     }
-  }
+  },
 
-  // UPDATE ONE CATEGORY OF ACCOUNT (belongs to the account in URL)
-  //! PATCH	/api/accounts/:id/categories/:categoryId
-  async update(req, res) {
+  // DELETE A CATEGORY 
+
+  //? DELETE /api/category/:id
+
+  delete: async (req, res) => {
     try {
-      const categoryId = parseInt(req.params.categoryId);
-      const targetAccountId = parseInt(req.params.id);
-      const myAccountId = req.account.id;
-      const { name } = req.body;
+      const id = req.params.id;
 
-      // Cannot modify "Unspecified" (id 1)
-      if (categoryId === 1) {
-        return res.status(403).json({ status: 403, message: "Cannot modify the Unspecified category" });
+      // CHECKING IF CATEGORY TO DELETE EXISTS IN DB
+
+      const category = await categoryService.getById(id);
+
+      if (!category || category.account_id !== req.account.id) {
+        return res.status(404).json({ status: 404, message: `No category with ID ${id}, sorry` })
+      }
+      else {
+
+        const deleted = await categoryService.delete(id);
+
+        if (deleted) {
+
+          // 204 DOES NOT ACCEPT BODY, SO 200 HERE
+
+          res.status(200).json({
+            status: 200,
+            message: 'Category deleted successfully'
+          });
+        }
+        else {
+          res.status(404).json({
+            status: 404,
+            message: `Could not delete category with ID ${id}`
+          });
+        }
+      }
+    }
+    catch (err) {
+      res.status(500).json({ status: 500, message: 'A server error occured while deleting the category 🐾' + err });
+    }
+  },
+
+
+  // UPDATE A CATEGORY 
+
+  //? PATCH	/api/category/:id
+
+  update: async (req, res) => {
+    try {
+      const id = req.params.id;
+
+      const category = await categoryService.getById(id);
+
+      if (!category || category.account_id !== req.account.id) {
+        return res.status(404).json({ status: 404, message: `No category with ID ${id}, sorry` });
       }
 
-      // Member: MUST use their own account ID in URL
-      if (targetAccountId !== myAccountId) {
-        return res.status(403).json({ status: 403, message: "You can only modify your own categories" });
+      const { title } = req.body;
+
+      if (!title) {
+        return res.status(400).json({ status: 400, message: 'Provide a title to update, please' });
       }
 
-      const updated = await categoryService.update(categoryId, name, targetAccountId, false);
+      const new_title = title ?? category.title;
+
+      const updated = await categoryService.update(id, { title });
 
       if (!updated) {
-        return res.status(404).json({ status: 404, message: "Category not found or you don't have permission" });
+        return res.status(500).json({ status: 500, message: `Failed to update category title with ID ${id}` });
       }
 
-      return res.json({ status: 200, message: "Category updated", data: updated });
-    } catch (err) {
-      console.error(err);
-      if (err.name === 'SequelizeUniqueConstraintError') {
-        return res.status(409).json({ status: 409, message: "Category name already exists for this account" });
-      }
-      return res.status(500).json({ status: 500, message: "Server error while updating category" });
+      res.status(200).json({ message: 'Category updated', id, new_title });
     }
-  }
-
-  // DELETE ONE CATEGORY OF ACCOUNT (belongs to the account in URL)
-  //! DELETE / api / accounts /: id / categories /:categoryId	
-  async delete(req, res) {
-    try {
-      const categoryId = parseInt(req.params.categoryId);
-      const targetAccountId = parseInt(req.params.id);
-      const myAccountId = req.account.id;
-
-      // Cannot delete "Unspecified" (id 1)
-      if (categoryId === 1) {
-        return res.status(403).json({ status: 403, message: "Cannot delete the Unspecified category" });
-      }
-
-      // Member: MUST use their own account ID in URL
-      if (targetAccountId !== myAccountId) {
-        return res.status(403).json({ status: 403, message: "You can only delete your own categories" });
-      }
-
-      const deleted = await categoryService.delete(categoryId, targetAccountId, false);
-
-      if (!deleted) {
-        return res.status(404).json({ status: 404, message: "Category not found or you don't have permission" });
-      }
-
-      return res.json({ status: 200, message: "Category deleted" });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ status: 500, message: "Server error while deleting category" });
+    catch (err) {
+      res.status(500).json({ status: 500, message: 'A server error occured while updating the category\'s title  🐾' + err });
     }
   }
 }

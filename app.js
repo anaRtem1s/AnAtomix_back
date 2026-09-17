@@ -43,7 +43,7 @@ db.sequelize.authenticate()
 
 db.sequelize.sync();
 
-//! ONLY IF DB REBUILD IS NEEDED:
+//! ONLY IF DB REBUILD IS NEEDED// WILL DESTROY DB:
 
 //  db.sequelize.sync( { force : true} );
 
