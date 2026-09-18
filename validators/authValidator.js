@@ -1,4 +1,4 @@
-// AUTH / UPDATE VALIDATOR - INPUT VALIDATION SCHEMAS WITH ZOD -- MATCHING POSTGRESQL TABLE
+// AUTH / UPDATE VALIDATOR - INPUT VALIDATION SCHEMAS WITH ZOD -- MATCHING POSTGRESQL TABLE AND SEQUELIZE MODELS
 
 const { z } = require('zod');
 
@@ -48,35 +48,8 @@ const LoginFormSchema = z.object({
     }
 });
 
-// REUSING PSSWD REGEX RULES FROM REGISTER FORM
-
-const passwordRules = z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Must contain an uppercase letter')
-    .regex(/[a-z]/, 'Must contain a lowercase letter')
-    .regex(/[0-9]/, 'Must contain a digit')
-    .regex(/[^A-Za-z0-9]/, 'Must contain a special character');
 
 // UPDATE | MODIFY AN ACCOUNT FIELD 
-
-//! const UpdateAccountSchema = z.object({
-
-//     // Optional, but normalizes if present
-
-//     username: z.string().transform(val => val ? val.trim().toLowerCase() : '').optional(),
-
-//     // Optional, but normalizes if present
-
-//     email: z.string().max(255).transform(val => val ? val.trim().toLowerCase() : '').optional(),
-
-//     newPassword: passwordRules.optional(),
-
-// }).refine((data) => {
-//     // Ensure at least one field is provided
-//     return data.username || data.email || data.newPassword;
-// }, {
-//     message: "At least one of username, email, or new password must be provided."
-// });
 
 
 const UpdateAccountSchema = z.object({
@@ -92,8 +65,8 @@ const UpdateAccountSchema = z.object({
         .transform(val => val === '' ? '' : val.trim().toLowerCase())
         .optional(),
 
-    // [LUMO FIX] Allow empty string OR valid password. Trim only (case-sensitive).
-    // REMOVED passwordRules to avoid conflict with empty string.
+    // Allow empty string OR valid password. Trim only (case-sensitive).
+
     newPassword: z.union([
         z.string()
             .min(8, 'Password must be at least 8 characters')
@@ -109,7 +82,7 @@ const UpdateAccountSchema = z.object({
     // Ensure at least one field has a real value (not just empty string)
     return data.username || data.email || data.newPassword;
 }, {
-    message: "At least one of username, email, or newPassword must be provided."
+    message: "At least one of username, email, or Password must be provided."
 });
 
 // GENERIC MIDDLEWARE : TURNS A SCHEMA INTO EXPRESS MIDDLEWARE
@@ -119,7 +92,7 @@ function validateBody(schema) {
         const result = schema.safeParse(req.body);
 
         if (result.success) {
-              req.body = result.data;
+            req.body = result.data;
             next();
         } else {
             return res.status(400).json({

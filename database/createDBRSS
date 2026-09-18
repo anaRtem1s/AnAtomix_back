@@ -54,11 +54,11 @@ CREATE TABLE IF NOT EXISTS subscription (
   subscribed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   account_id INT NOT NULL,
   feed_source_id INT NOT NULL,
-  category_id INT NOT NULL,
+  category_id, -- Can be NULL as that means unspecified
 
   CONSTRAINT fk_subscription_account FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
   CONSTRAINT fk_subscription_feed_source FOREIGN KEY (feed_source_id) REFERENCES feed_source (id) ON DELETE CASCADE,
-  CONSTRAINT fk_subscription_category FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE SET DEFAULT,
+  CONSTRAINT fk_subscription_category FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE SET NULL,
   CONSTRAINT uk_subscription_account_feed_source UNIQUE (account_id, feed_source_id)
 );
 CREATE INDEX IF NOT EXISTS idx_subscription_account_id ON subscription (account_id);
@@ -88,7 +88,7 @@ CREATE INDEX IF NOT EXISTS idx_feed_article_published_at ON feed_article (publis
 CREATE TABLE IF NOT EXISTS mm_account_article (
   account_id INT NOT NULL,
   article_id INT NOT NULL,
-  read_at TIMESTAMPTZ,
+  read_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   is_favorite BOOLEAN NOT NULL DEFAULT false,
 
   CONSTRAINT pk_mm_account_article PRIMARY KEY (account_id, article_id),
@@ -100,13 +100,16 @@ CREATE INDEX IF NOT EXISTS idx_mm_account_article_article_id ON mm_account_artic
 
 -- ARTICLE TAG
 CREATE TABLE IF NOT EXISTS mm_article_tag (
+  account_id INT NOT NULL,
   article_id INT NOT NULL,
   tag_id INT NOT NULL,
   assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-  CONSTRAINT pk_mm_article_tag PRIMARY KEY (article_id, tag_id),
+  CONSTRAINT pk_mm_article_tag PRIMARY KEY (account_id, article_id, tag_id),
+  CONSTRAINT fk_mm_article_tag_account FOREIGN KEY (account_id) REFERENCES account (id) ON DELETE CASCADE,
   CONSTRAINT fk_mm_article_tag_article FOREIGN KEY (article_id) REFERENCES feed_article (id) ON DELETE CASCADE,
   CONSTRAINT fk_mm_article_tag_tag FOREIGN KEY (tag_id) REFERENCES tag (id) ON DELETE CASCADE
 );
+CREATE INDEX IF NOT EXISTS idx_mm_article_tag_article_id ON mm_article_tag (account_id);
 CREATE INDEX IF NOT EXISTS idx_mm_article_tag_article_id ON mm_article_tag (article_id);
 CREATE INDEX IF NOT EXISTS idx_mm_article_tag_tag_id ON mm_article_tag (tag_id);

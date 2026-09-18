@@ -20,4 +20,20 @@ router.use('/categories', categoryRouter)
 const tagRouter = require("./tagRouter.js");
 router.use('/tags', tagRouter)
 
+const subscriptionRouter = require("./subscriptionRouter.js");
+router.use('/subscriptions', subscriptionRouter)
+
+const feedArticleRouter = require("./feedArticleRouter.js");
+router.use('/feed_articles', feedArticleRouter)
+
+
+// Manages the personal user read/favorite tracking logs
+const mm_accountArticleRouter = require("./mm_accountArticleRouter.js");
+router.use('/account_articles', mm_accountArticleRouter);
+
+// Manages the personal user's tags on articles 
+const mm_articleTagRouter = require ("./mm_articleTagRouter.js");
+router.use('/article_tags', mm_articleTagRouter);
+
+
 module.exports = router;

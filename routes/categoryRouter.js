@@ -2,10 +2,9 @@
 
 const categoryController = require("../controllers/categoryController.js");
 const authentication = require("../middlewares/authMiddleware.js");
-const roleAuthorization = require("../middlewares/roleMiddleware.js");
+const roleAuthorization = require("../middlewares/roleMiddlewareOLD.js");
 
-//! TO DO + ADD TO ROUTES
-// const categoryValidator = require("../validators/categoryValidator.js");
+const categoryValidator = require("../validators/categoryValidator.js");
 
 const categoryRouter = require("express").Router();
 
@@ -17,9 +16,9 @@ categoryRouter.route('/')
   .get(authentication(), roleAuthorization(['member','admin']), categoryController.getAll)
 
   // CREATE A CATEGORY 
-  .post(authentication(), roleAuthorization(['member','admin']), categoryController.create)
+  .post(authentication(), roleAuthorization(['member','admin']), categoryValidator.validateCreateCategory, categoryController.create)
 
-//? http://localhost:PORT/api/categories/:id/:cid
+//? http://localhost:PORT/api/categories/:id/
 
 categoryRouter.route('/:id')
 
@@ -27,7 +26,7 @@ categoryRouter.route('/:id')
   .get(authentication(), roleAuthorization(['member','admin']), categoryController.getById)
 
   // UPDATE A CATEGORY
-  .patch(authentication(), roleAuthorization(['member','admin']), categoryController.update)
+  .patch(authentication(), roleAuthorization(['member','admin']), categoryValidator.validateUpdateCategory, categoryController.update)
 
   // DELETE A CATEGORY 
   .delete(authentication(), roleAuthorization(['member','admin']), categoryController.delete);

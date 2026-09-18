@@ -6,6 +6,54 @@ const tagService = require("../services/tagService.js");
 
 const tagController = {
 
+  /**
+     * Tag creation / update form model
+     * @typedef {object} TagForm
+     * @property {string} title.required - Title of the tag
+     * @property {string} color - Optional color code/name for the tag
+     */
+
+  /**
+   * Base tag details structure
+   * @typedef {object} TagDetails
+   * @property {number} id - Unique identifier
+   * @property {number} account_id - Owner account ID
+   * @property {string} title - Title of the tag
+   * @property {string} color - Color code/name of the tag
+   */
+
+  /**
+   * Tag info wrapper returned on creation success
+   * @typedef {object} TagCreatedResponse
+   * @property {string} message - Success message
+   * @property {TagDetails} attributes - The created tag data
+   */
+
+  /**
+   * Tag info returned on update success
+   * @typedef {object} TagUpdatedResponse
+   * @property {string} message - Success message
+   * @property {string} id - Updated tag ID
+   * @property {string} new_title - The finalized title
+   * @property {string} new_color - The finalized color
+   */
+
+  /**
+   * Standard message envelope for deletion or simple responses
+   * @typedef {object} TagMessageResponse
+   * @property {number} status - HTTP status code matching the header
+   * @property {string} message - Operational details
+   */
+
+  /**
+   * GET /api/tags
+   * @summary Get all tags for the authenticated account
+   * @tags Tags
+   * @security BearerAuth
+   * @return {array<TagDetails>} 200 - List of tags - application/json
+   * @return 500 - Internal Server Error
+   */
+
   // GET ALL TAGS
 
   //? GET	/api/tags
@@ -19,6 +67,17 @@ const tagController = {
       res.status(500).json({ status: 500, message: 'A server error occured while fetching tags 🐾' + err });
     }
   },
+
+  /**
+   * GET /api/tags/{id}
+   * @summary Get a tag by its ID
+   * @tags Tags
+   * @security BearerAuth
+   * @param {number} id.path.required - Tag ID
+   * @return {TagDetails} 200 - Tag details - application/json
+   * @return 404 - Not Found (tag doesn't exist or belongs to another account)
+   * @return 500 - Internal Server Error
+   */
 
   // GET A TAG BY ITS ID
 
@@ -42,6 +101,17 @@ const tagController = {
     }
   },
 
+  /**
+    * POST /api/tags
+    * @summary Create a new tag
+    * @tags Tags
+    * @security BearerAuth
+    * @param {TagForm} request.body.required - Tag data - application/json
+    * @return {TagCreatedResponse} 200 - Tag created successfully - application/json
+    * @return 400 - Bad Request (missing title)
+    * @return 404 - Not Found (creation process failed)
+    * @return 500 - Internal Server Error
+    */
 
   // CREATE A TAG
 
@@ -76,6 +146,16 @@ const tagController = {
       res.status(500).json({ status: 500, message: 'A server error occured while creating tag 🐾: ' + err });
     }
   },
+  /**
+   * DELETE /api/tag/{id}
+   * @summary Delete a tag by its ID
+   * @tags Tags
+   * @security BearerAuth
+   * @param {number} id.path.required - Tag ID
+   * @return {TagMessageResponse} 200 - Tag deleted successfully - application/json
+   * @return 404 - Not Found (tag doesn't exist, belongs to another account, or deletion failed)
+   * @return 500 - Internal Server Error
+   */
 
   // DELETE A TAG
 
@@ -118,6 +198,18 @@ const tagController = {
     }
   },
 
+  /**
+ * PATCH /api/tag/{id}
+ * @summary Update an existing tag's details
+ * @tags Tags
+ * @security BearerAuth
+ * @param {number} id.path.required - Tag ID
+ * @param {TagForm} request.body.required - Target elements to update - application/json
+ * @return {TagUpdatedResponse} 200 - Tag updated details - application/json
+ * @return 400 - Bad Request (missing updated title input)
+ * @return 404 - Not Found (tag doesn't exist or belongs to another account)
+ * @return 500 - Internal Server Error (failed to update row values)
+ */
 
   // UPDATE A TAG
 

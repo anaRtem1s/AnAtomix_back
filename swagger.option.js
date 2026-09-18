@@ -10,10 +10,10 @@ const swaggerOption = {
 
   info: {
     version: '1.0.0',
-    title: 'RSS Reader Web API',
-    description: 'RSS/Atom feeds aggregator API',
+    title: 'AnAtomix RSS Agregator Web API',
+    description: 'RSS / Atom feeds aggregator backend server',
     license: {
-      name: 'ISC', //! TO CHECK
+      name: 'ISC', //? TO CHECK
     },
   },
 

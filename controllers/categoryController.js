@@ -5,6 +5,28 @@
 const categoryService = require("../services/categoryService.js");
 
 const categoryController = {
+  /**
+ * Category creation form model
+ * @typedef {object} CategoryForm
+ * @property {string} title.required - Title of the category
+ */
+
+  /**
+   * Category info returned on success
+   * @typedef {object} CategoryInfo
+   * @property {number} id - Unique identifier
+   * @property {string} title - Title of the category
+   * @property {number} account_id - Owner account ID
+   */
+
+  /**
+   * GET /api/categories
+   * @summary Get all categories for the authenticated account
+   * @tags Categories
+   * @security BearerAuth
+   * @return {array<CategoryInfo>} 200 - List of categories - application/json
+   * @return 500 - Internal Server Error
+   */
 
   // GET ALL CATEGORIES 
 
@@ -19,6 +41,16 @@ const categoryController = {
       res.status(500).json({ status: 500, message: 'A server error occured while fetching categories 🐾' + err });
     }
   },
+  /**
+     * GET /api/categories/{id}
+     * @summary Get a category by its ID
+     * @tags Categories
+     * @security BearerAuth
+     * @param {number} id.path.required - Category ID
+     * @return {CategoryInfo} 200 - Category details - application/json
+     * @return 404 - Not Found (category doesn't exist or belongs to another account)
+     * @return 500 - Internal Server Error
+     */
 
   // GET A CATEGORY BY ITS ID
 
@@ -41,7 +73,16 @@ const categoryController = {
       res.status(500).json({ status: 500, message: 'A server error occured while fetching category 🐾' + err });
     }
   },
-
+  /**
+    * POST /api/categories
+    * @summary Create a new category
+    * @tags Categories
+    * @security BearerAuth
+    * @param {CategoryForm} request.body.required - Category data - application/json
+    * @return {CategoryInfo} 201 - Category created - application/json
+    * @return 400 - Bad Request (missing title)
+    * @return 500 - Internal Server Error
+    */
 
   // CREATE A CATEGORY 
 
@@ -75,6 +116,17 @@ const categoryController = {
       res.status(500).json({ status: 500, message: 'A server error occured while creating category 🐾: ' + err });
     }
   },
+
+  /**
+ * DELETE /api/categories/{id}
+ * @summary Delete a category by its ID
+ * @tags Categories
+ * @security BearerAuth
+ * @param {number} id.path.required - Category ID
+ * @return {CategoryMessageResponse} 200 - Category deleted successfully - application/json
+ * @return 404 - Not Found (category doesn't exist or belongs to another account)
+ * @return 500 - Internal Server Error
+ */
 
   // DELETE A CATEGORY 
 
@@ -116,6 +168,19 @@ const categoryController = {
       res.status(500).json({ status: 500, message: 'A server error occured while deleting the category 🐾' + err });
     }
   },
+
+  /**
+   * PATCH /api/categories/{id}
+   * @summary Update an existing category
+   * @tags Categories
+   * @security BearerAuth
+   * @param {number} id.path.required - Category ID
+   * @param {CategoryForm} request.body.required - Category details to update - application/json
+   * @return {CategoryInfo} 200 - Updated category info - application/json
+   * @return 400 - Bad Request (missing title)
+   * @return 404 - Not Found (category doesn't exist or belongs to another account)
+   * @return 500 - Internal Server Error
+   */
 
 
   // UPDATE A CATEGORY 

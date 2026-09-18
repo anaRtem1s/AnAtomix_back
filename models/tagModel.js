@@ -1,4 +1,5 @@
-// COMMUNICATION BACKEND - DATABASE WITH SEQUELIZE ORM
+// COMMUNICATION BACKEND JS - DATABASE WITH SEQUELIZE ORM
+
 const { Sequelize, DataTypes } = require("sequelize");
 
 /**

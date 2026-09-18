@@ -2,7 +2,7 @@
 
 const accountController = require("../controllers/accountController.js");
 const authentication = require("../middlewares/authMiddleware.js");
-const roleAuthorization = require("../middlewares/roleMiddleware.js");
+const roleAuthorization = require("../middlewares/roleMiddlewareOLD.js");
 const authValidator = require ("../validators/authValidator.js");
 
 const accountRouter = require("express").Router();

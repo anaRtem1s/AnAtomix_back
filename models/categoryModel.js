@@ -16,7 +16,7 @@ const categoryBuilder = (sequelize) => {
         autoIncrementIdentity: true
       },
       title: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING(256),
         allowNull: false
       }
       // FK account_id is added in the ASSOCIATIONS step (configDB.js).

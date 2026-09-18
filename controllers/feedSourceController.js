@@ -1,8 +1,72 @@
 const feedSourceService = require("../services/feedSourceService.js");
 
-//!CHECK 
 
 const feedSourceController = {
+  /**
+     * Feed source creation form model
+     * @typedef {object} FeedSourceCreateForm
+     * @property {string} feed_url.required - URL of the feed stream
+     * @property {string} feed_type.required - Format type (e.g., Atom / RSS)
+     * @property {string} title.required - Title of the feed source
+     * @property {string} descr - Optional summary description
+     * @property {string} site_url - Optional main website link
+     */
+
+  /**
+   * Feed source updating form model
+   * @typedef {object} FeedSourceUpdateForm
+   * @property {string} feed_url - URL of the feed stream
+   * @property {string} feed_type - Format type (e.g., Atom / RSS)
+   * @property {string} title - Title of the feed source
+   * @property {string} descr - Summary description
+   * @property {string} site_url - Main website link
+   */
+
+  /**
+   * Base feed source data structure
+   * @typedef {object} FeedSourceDetails
+   * @property {number} id - Unique identifier
+   * @property {string} feed_url - URL of the feed stream
+   * @property {string} feed_type - Format type
+   * @property {string} title - Title of the feed source
+   * @property {string} descr - Summary description
+   * @property {string} site_url - Main website link
+   */
+
+  /**
+   * Feed source wrapper returned on creation success
+   * @typedef {object} FeedSourceCreatedResponse
+   * @property {string} message - Success confirmation string
+   * @property {FeedSourceDetails} attributes - The created entity profile
+   */
+
+  /**
+   * Feed source elements returned on update success
+   * @typedef {object} FeedSourceUpdatedResponse
+   * @property {string} message - Success confirmation string
+   * @property {string} id - Target resource record ID
+   * @property {string} new_feed_url - Updated feed stream address
+   * @property {string} new_feed_type - Updated format standard
+   * @property {string} new_title - Updated display name
+   * @property {string} new_descr - Updated descriptions value
+   * @property {string} new_site_url - Updated base destination URL
+   */
+
+  /**
+   * Standard message envelope for deletion or simple responses
+   * @typedef {object} FeedSourceMessageResponse
+   * @property {number} status - HTTP status code matching the header
+   * @property {string} message - Operational details
+   */
+
+  /**
+   * GET /api/feed-sources
+   * @summary Get all global feed sources (Catalogue)
+   * @tags Feed Sources
+   * @security BearerAuth
+   * @return {array<FeedSourceDetails>} 200 - List of all feed sources - application/json
+   * @return 500 - Internal Server Error
+   */
 
   // GET ALL FEED SOURCES
 
@@ -15,6 +79,17 @@ const feedSourceController = {
       res.status(500).json({ status: 500, message: 'A server error occured while fetching feed sources list 🐾' + err });
     }
   },
+
+  /**
+   * GET /api/feed-sources/{id}
+   * @summary Get a specific feed source by its ID
+   * @tags Feed Sources
+   * @security BearerAuth
+   * @param {number} id.path.required - Feed Source ID
+   * @return {FeedSourceDetails} 200 - Feed source tracking details - application/json
+   * @return 404 - Not Found (resource does not exist)
+   * @return 500 - Internal Server Error
+   */
 
   //  GET A FEED SOURCE BY ITS ID
 
@@ -36,6 +111,18 @@ const feedSourceController = {
     }
   },
 
+    /**
+     * POST /api/feed-sources
+     * @summary Create a global shared feed source entry
+     * @tags Feed Sources
+     * @security BearerAuth
+     * @param {FeedSourceCreateForm} request.body.required - Feed initialization payload - application/json
+     * @return {FeedSourceCreatedResponse} 200 - Feed source entry recorded - application/json
+     * @return 400 - Bad Request (missing required payload attributes)
+     * @return 404 - Not Found (internal creation pipeline failure)
+     * @return 500 - Internal Server Error
+     */
+
   // CREATE A FEED SOURCE 
 
   create: async (req, res) => {
@@ -43,7 +130,7 @@ const feedSourceController = {
 
       const { feed_url, feed_type, title, descr, site_url } = req.body;
 
-      //? CHECKING MANDATORY FIELDS - CHECK FOR MANDATORY FEED TYPE (USER KNOWS?)
+      //? CHECKING MANDATORY FIELDS 
 
       if (!feed_url || !feed_type || !title) {
         return res.status(400).json({ status: 400, message: 'Feed URL, Feed type (Atom / RSS), & Feed source title are required' });
@@ -69,6 +156,17 @@ const feedSourceController = {
       res.status(500).json({ status: 500, message: 'A server error occured while creating feed source 🐾: ' + err });
     }
   },
+
+    /**
+     * DELETE /api/feed-sources/{id}
+     * @summary Delete a feed source entry from the global catalogue
+     * @tags Feed Sources
+     * @security BearerAuth
+     * @param {number} id.path.required - Target Feed Source ID
+     * @return {FeedSourceMessageResponse} 200 - Feed resource tracking record deleted - application/json
+     * @return 404 - Not Found (target record missing or processing error)
+     * @return 500 - Internal Server Error
+     */
 
   // DELETE FEED SOURCE
 
@@ -108,6 +206,19 @@ const feedSourceController = {
       res.status(500).json({ status: 500, message: 'A server error occured while deleting the feed source 🐾' + err });
     }
   },
+
+    /**
+     * PATCH /api/feed-sources/{id}
+     * @summary Update an active feed source definition
+     * @tags Feed Sources
+     * @security BearerAuth
+     * @param {number} id.path.required - Target Feed Source ID
+     * @param {FeedSourceUpdateForm} request.body.required - Target parameter fields to override - application/json
+     * @return {FeedSourceUpdatedResponse} 200 - Updated field validation profile - application/json
+     * @return 400 - Bad Request (no field variables targeting an change were provided)
+     * @return 404 - Not Found (resource target record structure missing)
+     * @return 500 - Internal Server Error (database record write modification error)
+     */
 
   // UPDATE A FEED SOURCE
 

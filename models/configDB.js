@@ -7,8 +7,8 @@ const categoryBuilder       = require("./categoryModel.js");
 const tagBuilder            = require("./tagModel.js");
 const subscriptionBuilder   = require("./subscriptionModel.js");
 const feedArticleBuilder    = require("./feedArticleModel.js");
-const accountArticleBuilder = require("./mmAccountArticleModel.js");
-const articleTagBuilder     = require("./mmArticleTagModel.js");
+const accountArticleBuilder = require("./mm_accountArticleModel.js");
+const articleTagBuilder     = require("./mm_articleTagModel.js");
 
 // RECUPERATION OF THE USEFUL ENV VARIABLES
 
@@ -61,9 +61,9 @@ db.feedSource.hasMany(db.subscription,   { foreignKey: { name: "feed_source_id",
 db.subscription.belongsTo(db.feedSource, { foreignKey: { name: "feed_source_id", allowNull: false } });
 
 // ---- CATEGORY 1-n SUBSCRIPTION ----
-// Delete a category -> subscriptions null the FK.
-db.category.hasMany(db.subscription,   { foreignKey: { name: "category_id", allowNull: false }, onDelete: "CASCADE" });
-db.subscription.belongsTo(db.category, { foreignKey: { name: "category_id", allowNull: false } });
+// Delete a category -> subscriptions null the FK (means unspecified).
+db.category.hasMany(db.subscription,   { foreignKey: { name: "category_id", allowNull: true }, onDelete: "SET NULL" });
+db.subscription.belongsTo(db.category, { foreignKey: { name: "category_id", allowNull: true } });
 
 // ---- FEED_SOURCE 1-n FEED_ARTICLE ----
 db.feedSource.hasMany(db.feedArticle,   { foreignKey: { name: "feed_source_id", allowNull: false }, onDelete: "CASCADE" });
@@ -83,6 +83,12 @@ db.accountArticle.belongsTo(db.feedArticle, { foreignKey: "article_id" });
 // ---- FEED_ARTICLE n-n TAG  (through mm_article_tag) ----
 db.feedArticle.belongsToMany(db.tag, { through: db.articleTag, foreignKey: "article_id", otherKey: "tag_id", onDelete: "CASCADE" });
 db.tag.belongsToMany(db.feedArticle, { through: db.articleTag, foreignKey: "tag_id", otherKey: "article_id", onDelete: "CASCADE" });
+db.feedArticle.belongsToMany(db.account, { through: db.articleTag, foreignKey: "article_id", otherKey: "account_id", onDelete: "CASCADE" });
+db.account.belongsToMany(db.feedArticle, { through: db.articleTag, foreignKey: "account_id", otherKey: "article_id", onDelete: "CASCADE" });
+db.account.belongsToMany(db.tag, { through: db.articleTag, foreignKey: "account_id", otherKey: "tag_id", onDelete: "CASCADE" });
+db.tag.belongsToMany(db.account, { through: db.articleTag, foreignKey: "tag_id", otherKey: "account_id", onDelete: "CASCADE" });
+db.account.hasMany(db.articleTag,   { foreignKey: "account_id" });
+db.articleTag.belongsTo(db.account, { foreignKey: "account_id" });
 db.feedArticle.hasMany(db.articleTag,   { foreignKey: "article_id" });
 db.articleTag.belongsTo(db.feedArticle, { foreignKey: "article_id" });
 db.tag.hasMany(db.articleTag,           { foreignKey: "tag_id" });
