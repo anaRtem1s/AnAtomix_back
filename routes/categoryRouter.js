@@ -2,7 +2,7 @@
 
 const categoryController = require("../controllers/categoryController.js");
 const authentication = require("../middlewares/authMiddleware.js");
-const roleAuthorization = require("../middlewares/roleMiddlewareOLD.js");
+const roleAuthorization = require("../middlewares/roleMiddleware.js");
 
 const categoryValidator = require("../validators/categoryValidator.js");
 

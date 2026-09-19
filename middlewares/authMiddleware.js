@@ -55,6 +55,11 @@ const authentication = () => {
       
       // INVALID OR EXPIRED TOKEN -> 401
       // Expired = the token is too old OR there was tampering on the token.
+
+
+       // 🔍 DETECTIVE LOG: This will print the actual reason in your backend terminal!
+      console.error("❌ JWT Verification Failed because:", err.message);
+      
       
        res.status(401).json({ status : 401, message : 'You must be logged in to access this ressource'})
     }

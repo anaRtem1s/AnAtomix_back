@@ -2,13 +2,18 @@ const db = require("../models/configDB.js");
 
 const subscriptionService = {
 
-  // FIND ALL subscriptionS
+  // FIND ALL SUBSCRIPTIONS
 
   getAll: async (account_id) => {
     try {
       const subscriptions = await db.subscription.findAll({
-        attributes: ['id', 'subscribed_at', 'account_id', 'feed_source_id', 'category_id'], // Columns to return
-        where: { account_id: account_id } // Filter condition
+        attributes: ['id', 'subscribed_at', 'account_id', 'feed_source_id', 'category_id'], //Columns to return
+        where: { account_id: account_id }, // Filter condition
+        // ADDING THE MODEL RELATIONSHIP ASSOCIATION DEFINED IN CONFIGDB
+        include: [{
+          model: db.feedSource,
+          attributes: ['id', 'feed_url', 'feed_type', 'title', 'descr', 'site_url']
+        }]
       });
       return subscriptions;
     }
@@ -17,7 +22,9 @@ const subscriptionService = {
     }
   },
 
-  // FIND ONE subscription BY ID
+  
+
+  // FIND A SUBSCRIPTION BY ID
 
   getById: async (id) => {
     try {
@@ -30,7 +37,7 @@ const subscriptionService = {
     }
   },
 
-  // CREATE A subscription
+  // CREATE A SUBSCRIPTION
 
   create: async (subscriptionToCreate) => {
     try {
@@ -64,7 +71,7 @@ const subscriptionService = {
     }
   },
 
-  // UPDATE A subscription (TITLE, COLOR)
+  // UPDATE A SUBSCRIPTION
 
   update: async (id, updates) => {
     try {

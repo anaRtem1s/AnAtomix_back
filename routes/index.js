@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.send('Welcome to my web API - RSS:Atom feeds aggregator!')
+  res.send('Welcome to my web server - AnAtomix || RSS & Atom feeds aggregator!')
 });
 
 const authRouter = require("./authRouter.js");
@@ -27,11 +27,11 @@ const feedArticleRouter = require("./feedArticleRouter.js");
 router.use('/feed_articles', feedArticleRouter)
 
 
-// Manages the personal user read/favorite tracking logs
+// Manages the personal account read / favorite status on articles 
 const mm_accountArticleRouter = require("./mm_accountArticleRouter.js");
 router.use('/account_articles', mm_accountArticleRouter);
 
-// Manages the personal user's tags on articles 
+// Manages the personal account's tags on articles 
 const mm_articleTagRouter = require ("./mm_articleTagRouter.js");
 router.use('/article_tags', mm_articleTagRouter);
 

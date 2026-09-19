@@ -122,7 +122,7 @@ const tagController = {
 
       const { title, color } = req.body;
 
-      //? CHECKING MANDATORY FIELDS - CHECK FOR MANDATORY account_id?
+      //? CHECKING MANDATORY FIELDS 
 
       if (!title) {
         return res.status(400).json({ status: 400, message: 'Tag title is required' });
@@ -146,6 +146,7 @@ const tagController = {
       res.status(500).json({ status: 500, message: 'A server error occured while creating tag 🐾: ' + err });
     }
   },
+
   /**
    * DELETE /api/tag/{id}
    * @summary Delete a tag by its ID
@@ -211,7 +212,7 @@ const tagController = {
  * @return 500 - Internal Server Error (failed to update row values)
  */
 
-  // UPDATE A TAG
+  // UPDATE A TAG - NOT IMPLEMENTED IN ROUTES
 
   //? PATCH	/api/tag/:id
 

@@ -12,6 +12,15 @@ Node.js - Express.js web (RESTful) API - server
 
 - Browser : Firefox Developer Edition
 
+## Specific Node.js packages:
+
+- [node-cron](https://www.npmjs.com/package/node-cron) 
+- [rss-parser](https://www.npmjs.com/package/rss-parser)
+
 ## Swagger JS doc link:
 
-http://localhost:PORT/doc/ // TO DELETE
+http://localhost:PORT/doc/
+
+## Client-side: 
+
+- React.js && CSS

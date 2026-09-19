@@ -1,16 +1,24 @@
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::: MAIN APP :::::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
-
 // USING PORT DEFINED IN ENV VARIABLE
-
 const { PORT } = process.env;
 
-// IMPORTING EXPRESS.JS
+// IMPORTING EXPRESS.JS && CORS
 
 const express = require('express');
+
+const cors = require('cors');
+
 
 // CREATING EXPRESS WEB SERVER
 
 const app = express();
+
+
+// ENABLING CORS FOR VITE / REACT (CLIENT)
+
+//!origin: process.env.REACT_APP_API_URL ||
+
+app.use(cors({ origin: 'http://localhost:5173' }));
 
 // MIDDLEWARE TO GET .JSON RESPONSES (strings from body [usr input in the front-end] are translated into jSON to be readable)
 

@@ -9,43 +9,37 @@ const roleAuthorization = (roles /* ALLOWED ROLES (member, admin, self) */) => {
   return async (req, res, next) => {
     
     // GETTING THE CONNECTED ACCOUNT'S ID (STORED BY THE AUTH MIDDLEWARE)
+    
     const accountId = req.account.id;
-  
     
-    // EXTRACTING ROLE FROM TOKEN - NOW ACTIVELY USED TO AVOID UNNECESSARY DB CALLS
-    const accountRole = req.account.role;
-    
-    // 1. FAST TRACK: IF TOKEN ROLE IS ALREADY ALLOWED, WE TRUST IT AND PASS IMMEDIATELY
-    if (roles.includes(accountRole)) {
-      next();
-    }
-    // 2. IF NOT ON THE FAST TRACK, WE FETCH FROM DB FOR SECURITY (CHECK "self" OR RECENT CHANGES)
-    else {
-      try {
-        const account = await accountService.getById(accountId);
-        
-        // IF ACCOUNT = NOT FOUND (DELETED FROM THE DB)
-        if (!account) {
-          res.status(403).json({ status: 403, message: "You are not allowed to access this route" })
+    //  EVEN THOUGH THE ROLE WAS EXTRACTED FROM THE TOKEN, FOR SAFETY WE FETCH THE ROLE FROM THE DB - IT MAY HAVE CHANGED SINCE (PROMOTION, DEACTIVATION...)
+    try {
+      const account = await accountService.getById(accountId);
+      
+      // IF  ACCOUNT = NOT FOUND (DELETED FROM THE DB)
+      
+      if (!account) {
+        res.status(403).json({ status: 403, message: "You are not allowed to access this route" })
+      }
+      else {
+        // IF WE HAVE AN ACCOUNT, WE CHECK THEIR ROLE IS PART OF THE ALLOWED ROLES + CHECKING IF ACCOUNT IS STILL ACTIVE
+        if (roles.includes(account.role) && account.is_active) {
+          next();
+        }
+        //? IF WE HAVE AN ACCOUNT, AND IF THEIR ROLE IS NOT PART OF THE ALLOWED ROLES + CHECKING IF ACCOUNT IS STILL ACTIVE + THE ID OF REQUEST NEEDS TO MATCH THE ACCOUNT'S ID
+        else if (!roles.includes(account.role) && roles.includes("self") && account.is_active && accountId == req.params.id) {
+          next();
         }
         else {
-          // IF WE HAVE AN ACCOUNT, WE CHECK THEIR LIVE ROLE IS PART OF THE ALLOWED ROLES + CHECKING IF ACCOUNT IS STILL ACTIVE
-          if (roles.includes(account.role) && account.is_active) {
-            next();
-          }
-          // IF WE HAVE AN ACCOUNT, AND THEIR LIVE ROLE FAILED, WE CHECK FOR "self" AND ID MATCH
-          else if (roles.includes("self") && account.is_active && accountId == req.params.id) {
-            next();
-          }
-          else {
-            res.status(403).json({ status: 403, message: "You are not allowed to access this route" })
-          }
+          res.status(403).json({ status: 403, message: "You are not allowed to access this route" })
         }
       }
-      catch (err) {
-        res.status(500).json({ status : 500, message : 'A server error occured 🐾' + err});
-      } 
     }
+    catch (err) {
+      
+      
+      res.status(500).json({ status : 500, message : 'A server error occured 🐾' + err});
+    } 
   }
 }
 

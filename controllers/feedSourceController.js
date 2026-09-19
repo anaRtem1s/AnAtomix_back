@@ -1,5 +1,9 @@
 const feedSourceService = require("../services/feedSourceService.js");
 
+//? IMPORTING RSS / ATOM PARSER 
+
+const parserService = require("../services/parser/parserService.js");
+
 
 const feedSourceController = {
   /**
@@ -100,7 +104,7 @@ const feedSourceController = {
       const feedSource = await feedSourceService.getById(id);
 
       if (!feedSource) {
-        res.status(404).json({ status: 404, message: `No feed source with ID ${id}, sorry` })
+        res.status(404).json({ status: 404, message: ` 💥 No feed source with ID ${id}, sorry` })
       }
       else {
         res.status(200).json(feedSource);
@@ -111,62 +115,79 @@ const feedSourceController = {
     }
   },
 
-    /**
-     * POST /api/feed-sources
-     * @summary Create a global shared feed source entry
-     * @tags Feed Sources
-     * @security BearerAuth
-     * @param {FeedSourceCreateForm} request.body.required - Feed initialization payload - application/json
-     * @return {FeedSourceCreatedResponse} 200 - Feed source entry recorded - application/json
-     * @return 400 - Bad Request (missing required payload attributes)
-     * @return 404 - Not Found (internal creation pipeline failure)
-     * @return 500 - Internal Server Error
-     */
+  /**
+   * POST /api/feed-sources
+   * @summary Create a global shared feed source entry
+   * @tags Feed Sources
+   * @security BearerAuth
+   * @param {FeedSourceCreateForm} request.body.required - Feed initialization payload - application/json
+   * @return {FeedSourceCreatedResponse} 200 - Feed source entry recorded - application/json
+   * @return 400 - Bad Request (missing required payload attributes)
+   * @return 404 - Not Found (internal creation pipeline failure)
+   * @return 500 - Internal Server Error
+   */
 
-  // CREATE A FEED SOURCE 
 
   create: async (req, res) => {
     try {
-
-      const { feed_url, feed_type, title, descr, site_url } = req.body;
+      const { feed_url } = req.body;
 
       //? CHECKING MANDATORY FIELDS 
-
-      if (!feed_url || !feed_type || !title) {
-        return res.status(400).json({ status: 400, message: 'Feed URL, Feed type (Atom / RSS), & Feed source title are required' });
+      if (!feed_url) {
+        return res.status(400).json({ status: 400, message: '💥 Feed URL is required' });
       }
 
-      const feedSourceCreated = await feedSourceService.create(
-        {
-          feed_url,
-          feed_type,
-          title,
-          descr,
-          site_url
-        });
+      // EXTRACT REAL ONLINE METADATA BY PARSING THE LIVE FEED LINK ON THE BACKEND
+
+      const onlineFeedProfile = await parserService.parseURL(feed_url);
+
+      const extractedTitle = onlineFeedProfile.title || "Untitled Feed Source";
+      const extractedDescr = onlineFeedProfile.description || null;
+      const extractedSiteUrl = onlineFeedProfile.link || null;
+      const detectedType = feed_url.toLowerCase().includes('atom') ? 'atom' : 'rss';
+
+      // CALLING SERVICE 
+
+      const feedSourceCreated = await feedSourceService.create({
+        feed_url,
+        feed_type: detectedType,
+        title: extractedTitle,
+        descr: extractedDescr,
+        site_url: extractedSiteUrl
+      });
 
       if (!feedSourceCreated) {
-        return res.status(404).json({ status: 404, message: `Could not create feed source, sorry` });
+        return res.status(404).json({ status: 404, message: `💥 Could not create feed source, sorry` });
       }
 
+      // RUN IMMEDATELY FRESH ARTICLES HARVEST SYNCHRONIZATION FROM THE ONLINE LINK XML
+      await parserService.syncArticlesForSource(feedSourceCreated.id, feedSourceCreated.feed_url);
+
       feedSourceCreated.message = 'Feed source created';
-      res.status(200).json({ message: 'Feed source created', 'attributes': feedSourceCreated });
+      res.status(200).json({ message: '💥 Feed source created!', 'attributes': feedSourceCreated });
     }
     catch (err) {
+
+      // INTERCEPT SEQUELIZE UNIQUE CONSTRAINT EXCEPTION FOR ALREADY REGISTERED FEEDS
+
+      if (err.name === 'SequelizeUniqueConstraintError' || (err.message && err.message.includes('Validation error'))) {
+        return res.status(400).json({ status: 400, message: ' 💥 This feed URL is already registered our globalcatalogue!' });
+      }
+
       res.status(500).json({ status: 500, message: 'A server error occured while creating feed source 🐾: ' + err });
     }
   },
 
-    /**
-     * DELETE /api/feed-sources/{id}
-     * @summary Delete a feed source entry from the global catalogue
-     * @tags Feed Sources
-     * @security BearerAuth
-     * @param {number} id.path.required - Target Feed Source ID
-     * @return {FeedSourceMessageResponse} 200 - Feed resource tracking record deleted - application/json
-     * @return 404 - Not Found (target record missing or processing error)
-     * @return 500 - Internal Server Error
-     */
+  /**
+   * DELETE /api/feed-sources/{id}
+   * @summary Delete a feed source entry from the global catalogue
+   * @tags Feed Sources
+   * @security BearerAuth
+   * @param {number} id.path.required - Target Feed Source ID
+   * @return {FeedSourceMessageResponse} 200 - Feed resource tracking record deleted - application/json
+   * @return 404 - Not Found (target record missing or processing error)
+   * @return 500 - Internal Server Error
+   */
 
   // DELETE FEED SOURCE
 
@@ -179,7 +200,7 @@ const feedSourceController = {
       const feedSourceToDelete = await feedSourceService.getById(id);
 
       if (!feedSourceToDelete) {
-        return res.status(404).json({ status: 404, message: `No feed source with ID ${id}, sorry` })
+        return res.status(404).json({ status: 404, message: ` 💥 No feed source with ID ${id}, sorry` })
       }
       else {
 
@@ -191,13 +212,13 @@ const feedSourceController = {
 
           res.status(200).json({
             status: 200,
-            message: 'Feed source deleted successfully'
+            message: '💥 Feed source deleted successfully, admin'
           });
         }
         else {
           res.status(404).json({
             status: 404,
-            message: `Could not delete feed source with ID ${id}`
+            message: `💥 Could not delete feed source with ID ${id}, admin`
           });
         }
       }
@@ -207,18 +228,18 @@ const feedSourceController = {
     }
   },
 
-    /**
-     * PATCH /api/feed-sources/{id}
-     * @summary Update an active feed source definition
-     * @tags Feed Sources
-     * @security BearerAuth
-     * @param {number} id.path.required - Target Feed Source ID
-     * @param {FeedSourceUpdateForm} request.body.required - Target parameter fields to override - application/json
-     * @return {FeedSourceUpdatedResponse} 200 - Updated field validation profile - application/json
-     * @return 400 - Bad Request (no field variables targeting an change were provided)
-     * @return 404 - Not Found (resource target record structure missing)
-     * @return 500 - Internal Server Error (database record write modification error)
-     */
+  /**
+   * PATCH /api/feed-sources/{id}
+   * @summary Update an active feed source definition
+   * @tags Feed Sources
+   * @security BearerAuth
+   * @param {number} id.path.required - Target Feed Source ID
+   * @param {FeedSourceUpdateForm} request.body.required - Target parameter fields to override - application/json
+   * @return {FeedSourceUpdatedResponse} 200 - Updated field validation profile - application/json
+   * @return 400 - Bad Request (no field variables targeting an change were provided)
+   * @return 404 - Not Found (resource target record structure missing)
+   * @return 500 - Internal Server Error (database record write modification error)
+   */
 
   // UPDATE A FEED SOURCE
 
@@ -229,13 +250,13 @@ const feedSourceController = {
       const feedSource = await feedSourceService.getById(id);
 
       if (!feedSource) {
-        return res.status(404).json({ status: 404, message: `No feed source with ID ${id}, sorry` });
+        return res.status(404).json({ status: 404, message: ` 💥 No feed source with ID ${id}, sorry` });
       }
 
       const { feed_url, feed_type, title, descr, site_url } = req.body;
 
       if (!feed_url && !feed_type && !title && !descr && !site_url) {
-        return res.status(400).json({ status: 400, message: 'Provide at least one value to update' });
+        return res.status(400).json({ status: 400, message: '💥 Provide at least one value to update' });
       }
 
       const new_feed_url = feed_url ?? feedSource.feed_url;
@@ -247,7 +268,7 @@ const feedSourceController = {
       const updated = await feedSourceService.update(id, { feed_url, feed_type, title, descr, site_url });
 
       if (!updated) {
-        return res.status(500).json({ status: 500, message: `Failed to update feed source with ID ${id}` });
+        return res.status(500).json({ status: 500, message: `💥 Failed to update feed source with ID ${id}` });
       }
 
       res.status(200).json({ message: 'Feed source updated', id, new_feed_url, new_feed_type, new_title, new_descr, new_site_url });

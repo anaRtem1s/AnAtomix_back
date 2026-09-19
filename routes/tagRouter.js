@@ -2,9 +2,9 @@
 
 const tagController = require("../controllers/tagController.js");
 const authentication = require("../middlewares/authMiddleware.js");
-const roleAuthorization = require("../middlewares/roleMiddlewareOLD.js");
+const roleAuthorization = require("../middlewares/roleMiddleware.js");
 
-//! TO TEST
+//? TO TEST
 
 const tagValidator = require("../validators/tagValidator.js");
 

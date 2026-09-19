@@ -60,7 +60,7 @@ const subscriptionController = {
    * @return 500 - Internal Server Error
    */
 
-  // GET ALL SUBSCRIPTIONS
+  // GET ALL SUBSCRIPTIONS FOR AN ACCOUNT
 
   //? GET	/api/subscriptions
 
@@ -108,21 +108,20 @@ const subscriptionController = {
   },
 
   /**
-   * POST /api/subscriptions
-   * @summary Create a new subscription to a feed
-   * @tags Subscriptions
-   * @security BearerAuth
-   * @param {SubscriptionCreateForm} request.body.required - Subscription initialization details - application/json
-   * @return {SubscriptionCreatedResponse} 200 - Subscription created successfully - application/json
-   * @return 400 - Bad Request (missing feed_source_id)
-   * @return 404 - Not Found (creation process failed)
-   * @return 500 - Internal Server Error
-   */
+  * POST /api/subscriptions
+  * @summary Create a new subscription to a feed
+  * @tags Subscriptions
+  * @security BearerAuth
+  * @param {SubscriptionCreateForm} request.body.required - Subscription initialization details - application/json
+  * @return {SubscriptionCreatedResponse} 200 - Subscription created successfully - application/json
+  * @return 400 - Bad Request (missing feed_source_id or already subscribed)
+  * @return 404 - Not Found (creation process failed)
+  * @return 500 - Internal Server Error
+  */
 
   // CREATE A SUBSCRIPTION
 
   //? POST	/api/subscriptions/
-
   create: async (req, res) => {
     try {
 
@@ -149,9 +148,15 @@ const subscriptionController = {
       res.status(200).json({ message: 'subscription to feed created', 'attributes': subscription });
     }
     catch (err) {
+      // 🚩 INTERCEPTING SEQUELIZE UNIQUE CONSTRAINT VALIDATION ERRORS BEFORE SENDING A CRASH STATUS
+      if (err.name === 'SequelizeUniqueConstraintError' || (err.message && err.message.includes('Validation error'))) {
+        return res.status(400).json({ status: 400, message: 'You are already subscribed to this feed source! 📰' });
+      }
+
       res.status(500).json({ status: 500, message: 'A server error occured while creating subscription to feed 🐾: ' + err });
     }
   },
+
   /**
  * DELETE /api/subscription/{id}
  * @summary Delete a subscription by its ID

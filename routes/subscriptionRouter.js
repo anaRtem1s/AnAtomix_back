@@ -2,7 +2,7 @@
 
 const subscriptionController = require("../controllers/subscriptionController.js");
 const authentication = require("../middlewares/authMiddleware.js");
-const roleAuthorization = require("../middlewares/roleMiddlewareOLD.js");
+const roleAuthorization = require("../middlewares/roleMiddleware.js");
 
 const subscriptionValidator = require("../validators/subscriptionValidator.js");
 

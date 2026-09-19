@@ -40,108 +40,108 @@ const mm_articleTagController = {
                 attributes: articleTags
             });
         } catch (err) {
-            res.status(500).json({ 
-                status: 500, 
-                message: 'A server error occurred while fetching article tags 🐾 ' + err.message 
+            res.status(500).json({
+                status: 500,
+                message: 'A server error occurred while fetching article tags 🐾 ' + err.message
             });
         }
     },
 
     getArticleTagsByArticleId: async (req, res) => {
         try {
-            const articleTags = await mm_articleTagService.getArticleTagsByArticleId(req.account.id,req.params.article_id);
+            const articleTags = await mm_articleTagService.getArticleTagsByArticleId(req.account.id, req.params.article_id);
             res.status(200).json({
                 status: 200,
                 message: 'Article tags retrieved successfully',
                 attributes: articleTags
             });
         } catch (err) {
-            res.status(500).json({ 
-                status: 500, 
-                message: 'A server error occurred while fetching article tags 🐾 ' + err.message 
+            res.status(500).json({
+                status: 500,
+                message: 'A server error occurred while fetching article tags 🐾 ' + err.message
             });
         }
     },
 
     getArticleTagsByTagId: async (req, res) => {
         try {
-            const articleTags = await mm_articleTagService.getArticleTagsByTagId(req.account.id,req.params.tag_id);
+            const articleTags = await mm_articleTagService.getArticleTagsByTagId(req.account.id, req.params.tag_id);
             res.status(200).json({
                 status: 200,
                 message: 'Article tags retrieved successfully',
                 attributes: articleTags
             });
         } catch (err) {
-            res.status(500).json({ 
-                status: 500, 
-                message: 'A server error occurred while fetching article tags 🐾 ' + err.message 
+            res.status(500).json({
+                status: 500,
+                message: 'A server error occurred while fetching article tags 🐾 ' + err.message
             });
         }
     },
 
     getArticleTag: async (req, res) => {
         try {
-            const articleTag = await mm_articleTagService.getArticleTag(req.account.id,req.params.article_id,req.params.tag_id);
-            if(articleTag){
+            const articleTag = await mm_articleTagService.getArticleTag(req.account.id, req.params.article_id, req.params.tag_id);
+            if (articleTag) {
                 res.status(200).json({
                     status: 200,
                     message: 'Article tags retrieved successfully',
                     attributes: articleTag
                 });
             } else {
-                res.status(500).json({ 
-                    status: 500, 
+                res.status(500).json({
+                    status: 500,
                     message: 'A server error occurred while fetching article tags 🐾 '
-                });                
+                });
             }
         } catch (err) {
-            res.status(500).json({ 
-                status: 500, 
-                message: 'A server error occurred while fetching article tags 🐾 ' + err.message 
+            res.status(500).json({
+                status: 500,
+                message: 'A server error occurred while fetching article tags 🐾 ' + err.message
             });
         }
     },
     createArticleTag: async (req, res) => {
         try {
-            const created = await mm_articleTagService.createArticleTag(req.account.id,req.params.article_id,req.params.tag_id);
-            if(created){
+            const created = await mm_articleTagService.createArticleTag(req.account.id, req.params.article_id, req.params.tag_id);
+            if (created) {
                 res.status(200).json({
                     status: 200,
                     message: 'Article tags created successfully',
                     attributes: created
                 });
             } else {
-                res.status(500).json({ 
-                    status: 500, 
+                res.status(500).json({
+                    status: 500,
                     message: 'A server error occurred while creating article tags 🐾 '
                 });
             }
         } catch (err) {
-            res.status(500).json({ 
-                status: 500, 
-                message: 'A server error occurred while fetching article tags 🐾 ' + err.message 
+            res.status(500).json({
+                status: 500,
+                message: 'A server error occurred while fetching article tags 🐾 ' + err.message
             });
         }
     },
     deleteArticleTag: async (req, res) => {
         try {
-            const deleted = await mm_articleTagService.deleteArticleTag(req.account.id,req.params.article_id,req.params.tag_id);
-            if(deleted){
+            const deleted = await mm_articleTagService.deleteArticleTag(req.account.id, req.params.article_id, req.params.tag_id);
+            if (deleted) {
                 res.status(200).json({
                     status: 200,
                     message: 'Article tags deleted successfully',
                     attributes: deleted
                 });
             } else {
-                res.status(500).json({ 
-                    status: 500, 
+                res.status(500).json({
+                    status: 500,
                     message: 'A server error occurred while deleting article tags 🐾 '
                 });
             }
         } catch (err) {
-            res.status(500).json({ 
-                status: 500, 
-                message: 'A server error occurred while fetching article tags 🐾 ' + err.message 
+            res.status(500).json({
+                status: 500,
+                message: 'A server error occurred while fetching article tags 🐾 ' + err.message
             });
         }
     }

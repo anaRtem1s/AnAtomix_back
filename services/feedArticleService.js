@@ -2,13 +2,28 @@ const db = require("../models/configDB.js");
 
 const feedArticleService = {
 
-  // FIND ALL FEED ARTICLES
+  // FIND ALL FEED ARTICLES LINKED TO ACCOUNT SUBSCRIPTIONS
 
-  getAll: async () => {
+  getAll: async (account_id) => {
     try {
+
+      // FILTERS ARTICLES BY JOINING THE SUBSCRIPTION TABLE LINKED TO THE ACTIVE ACCOUNT ID
+
       const feedArticles = await db.feedArticle.findAll({
-        attributes: ['id', 'guid', 'link', 'title', 'summary', 'content_html', 'author', 'published_at', 'updated_at', 'feed_source_id']
-      }); // Columns to return
+        attributes: ['id', 'guid', 'link', 'title', 'summary', 'content_html', 'author', 'published_at', 'updated_at', 'feed_source_id'], // Columns to return
+        order: [['published_at', 'DESC']], // SHOWS THE NEWEST FIRST
+        include: [{
+          model: db.feedSource,
+          required: true, // ENFORCES AN INNER JOIN TO WEBSITE
+          attributes: ['id', 'feed_url', 'feed_type', 'title', 'descr', 'site_url'],
+          include: [{
+            model: db.subscription,
+            required: true, // BACKGROUND CRON ENTRIES ARE AUTO-FILTERED OUT BY THE DB ENGINE
+            where: { account_id: account_id }, // FILTER STRICKLY BY LOGGED IN ACCOUNT
+            attributes: ['category_id'] // FORCE SEQUELIZE TO RETURN THE ACTIVE CATEGORY ID 
+          }]          
+        }]
+      });
 
       return feedArticles;
     }

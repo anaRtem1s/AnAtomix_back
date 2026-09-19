@@ -2,7 +2,7 @@
 
 // CONTROLLER IS AN OBJECT CONTAINING SEVERAL FUNCTIONS (= FEATURES) 
 
-//! TO TEST - PROBABLY DOES NOT WORK
+//! TO TEST 
 
 const mm_accountArticleService = require("../services/mm_accountArticleService.js");
 
@@ -29,7 +29,7 @@ const mm_accountArticleController = {
   getById: async (req, res) => {
     try {
       const article_id = req.params.id;
-      const accountArticle = await mm_accountArticleService.getById(req.account.id,article_id);
+      const accountArticle = await mm_accountArticleService.getById(req.account.id, article_id);
       if (!accountArticle) {
         res.status(404).json({ status: 404, message: `No read / loved with ID ${article_id}, sorry` })
       }
@@ -38,7 +38,7 @@ const mm_accountArticleController = {
       }
     }
     catch (err) {
-      res.status(500).json({ status: 500, message: 'A server error occured while fetching read / loved article  🐾' + err});
+      res.status(500).json({ status: 500, message: 'A server error occured while fetching read / loved article  🐾' + err });
     }
   },
 
@@ -72,60 +72,60 @@ const mm_accountArticleController = {
   },
   // MARK AN ARTICLE AS UNREAD (Deletes the record)
   markAsUnread: async (req, res) => {
-        try {
-            const articleId = req.params.id;
-            const accountId = req.account.id;
+    try {
+      const articleId = req.params.id;
+      const accountId = req.account.id;
 
-            const wasDeleted = await mm_accountArticleService.markAsUnread(accountId, articleId);
+      const wasDeleted = await mm_accountArticleService.markAsUnread(accountId, articleId);
 
-            if (!wasDeleted) {
-                return res.status(404).json({ 
-                    status: 404, 
-                    message: `Article with ID ${articleId} was already unread or does not exist, sorry` 
-                });
-            }
+      if (!wasDeleted) {
+        return res.status(404).json({
+          status: 404,
+          message: `Article with ID ${articleId} was already unread or does not exist, sorry`
+        });
+      }
 
-            res.status(200).json({
-                status: 200,
-                message: 'Article marked as unread successfully'
-            });
-        }
-        catch (err) {
-            res.status(500).json({ status: 500, message: 'A server error occured while resetting read status 🐾' + err.message });
-        }
-    },
-
-    /**
-     * PATCH /api/account_articles/{articleId}/favorite
-     * @summary Toggle the favorite/love bookmark status of an article for the logged-in user
-     * @tags Account Articles
-     * @security BearerAuth
-     * @param {number} articleId.path.required - Target Article ID
-     * @return {FavoriteToggleResponse} 200 - Favorite status changed - application/json
-     * @return 500 - Internal Server Error
-     */
-
-    // TOGGLE FAVORITE / LOVE STATUS ON AN ARTICLE
-    toggleFavorite: async (req, res) => {
-        try {
-            const articleId = req.params.id;
-            const accountId = req.account.id;
-
-            const readFavouriteStatus = await mm_accountArticleService.toggleFavorite(accountId, articleId);
-
-            if (!readFavouriteStatus) {
-                return res.status(500).json({ status: 500, message: `Failed to update read / loved status on article with ID ${articleId}` });
-            }
-
-            res.status(200).json({ 
-                message: 'read / loved status on article updated', 
-                'attributes': readFavouriteStatus 
-            });
-        }
-        catch (err) {
-            res.status(500).json({ status: 500, message: 'A server error occured while updating the read / loved status on article 🐾' + err.message });
-        }
+      res.status(200).json({
+        status: 200,
+        message: 'Article marked as unread successfully'
+      });
     }
+    catch (err) {
+      res.status(500).json({ status: 500, message: 'A server error occured while resetting read status 🐾' + err.message });
+    }
+  },
+
+  /**
+   * PATCH /api/account_articles/{articleId}/favorite
+   * @summary Toggle the favorite/love bookmark status of an article for the logged-in user
+   * @tags Account Articles
+   * @security BearerAuth
+   * @param {number} articleId.path.required - Target Article ID
+   * @return {FavoriteToggleResponse} 200 - Favorite status changed - application/json
+   * @return 500 - Internal Server Error
+   */
+
+  // TOGGLE FAVORITE / LOVE STATUS ON AN ARTICLE
+  toggleFavorite: async (req, res) => {
+    try {
+      const articleId = req.params.id;
+      const accountId = req.account.id;
+
+      const readFavouriteStatus = await mm_accountArticleService.toggleFavorite(accountId, articleId);
+
+      if (!readFavouriteStatus) {
+        return res.status(500).json({ status: 500, message: `Failed to update read / loved status on article with ID ${articleId}` });
+      }
+
+      res.status(200).json({
+        message: 'read / loved status on article updated',
+        'attributes': readFavouriteStatus
+      });
+    }
+    catch (err) {
+      res.status(500).json({ status: 500, message: 'A server error occured while updating the read / loved status on article 🐾' + err.message });
+    }
+  }
 }
 
 module.exports = mm_accountArticleController;
