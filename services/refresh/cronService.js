@@ -1,21 +1,21 @@
-// const cron = require('node-cron');
+const cron = require('node-cron');
 
-// const feedSourceService = require('../feedSourceService.js');
+const feedSourceService = require('../feedSourceService.js');
 
-// // WAKE UP AUTOMATICALLY EVERY HOUR (0 * * * *)
+// WAKE UP AUTOMATICALLY EVERY HOUR (0 * * * *)
 
-// cron.schedule('0 * * * *', async () => {
+cron.schedule('0 * * * *', async () => {
 
-//   console.log('⏰ CRON BOT STARTED: PARSING LATEST STREAM XML FEEDS');
+  console.log('CRON STARTED: PARSING LATEST STREAM XML FEEDS');
 
-//   try {
+  try {
 
-//     // CALLING SYNC FUNCTION TO DL FRESH ARTICLES
+    // CALLING SYNC FUNCTION TO DL FRESH ARTICLES
 
-//     await feedSourceService.syncAllActiveFeeds();
+    await feedSourceService.syncAllActiveFeeds();
 
-//   } catch (err) {
+  } catch (err) {
 
-//     console.error('💥 CRON SERVER REJECTION:', err.message);
-//   }
-// });
+    console.error('💥 CRON SERVER REJECTION:', err.message);
+  }
+});

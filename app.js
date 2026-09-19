@@ -61,6 +61,9 @@ db.sequelize.sync();
 const router = require("./routes");
 app.use('/api', router);
 
+// CRON SERVICE
+
+require('./services/refresh/cronService.js');
 
 // LAUNCHING SERVER ON LOCALHOST PORT
 
