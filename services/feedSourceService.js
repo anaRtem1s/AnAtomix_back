@@ -1,14 +1,18 @@
 const db = require("../models/configDB.js");
 
+//IMPORTING PARSER SERVICE TO REUSE THE LOOP CAPABILITIES 
+
+const parserService = require("./parser/parserService.js");
+
 const feedSourceService = {
 
   // FIND ALL FEED SOURCES (GLOBAL CATALOGUE)
 
   getAll: async () => {
     try {
-        const feedSources = await db.feedSource.findAll(
-            { attributes: ['id', 'feed_url', 'feed_type', 'title', 'descr', 'site_url'] });
-        return feedSources;
+      const feedSources = await db.feedSource.findAll(
+        { attributes: ['id', 'feed_url', 'feed_type', 'title', 'descr', 'site_url'] });
+      return feedSources;
     }
     catch (err) {
       throw new Error(err.message);
@@ -78,6 +82,40 @@ const feedSourceService = {
       throw new Error(err.message);
     }
   },
+
+  //! AUTOMATED MASS HARVEST SYNC CALLED BY CRON EVERY HOUR
+
+  syncAllActiveFeeds: async () => {
+    try {
+      // CRON LOGGING: NOTIFY CONSOLE THAT ENGINE INITIATED HARVEST
+      console.log("🔹 ⏰ [CRON START] FETCHING GLOBAL FEED SITES...");
+
+      const sources = await db.feedSource.findAll({
+        attributes: ['id', 'feed_url']
+      });
+
+      // CRON LOGGING: RENDER TOTAL CHANNELS DISCOVERED IN CATALOGUE
+      console.log(`🔹 🤖 FOUND ${sources.length} CHANNELS TO UPDATE.`);
+
+      for (const source of sources) {
+        // CRON LOGGING: ANNOUNCE TARGET CURRENTLY PROCESSING
+        console.log(`🔹 📥 SYNCING FEED SOURCE ID: [${source.id}] - LINK: ${source.feed_url}`);
+
+        // REUSE YOUR EXISTING PARSERSERVICE METHOD TO DOWNLOAD AND INSERT NO-DUPLICATE ITEMS
+        await parserService.syncArticlesForSource(source.id, source.feed_url);
+      }
+
+      // CRON LOGGING: SIGN OFF BATCH COMPLETION STATUS SUCCESS
+      console.log("🔹 ✅ [CRON END] ALL SITES UPDATED SUCCESSFULY.");
+      return true;
+    }
+    catch (err) {
+      // 🔹 CRON LOGGING: CATCH INTERMEDIATE NETWORK DROPS OR REJECTIONS
+      console.error("🔹 💥 [CRON FAILED] PROCESS CRASHED:", err.message);
+      throw new Error(err.message);
+    }
+  },
 }
+
 
 module.exports = feedSourceService;

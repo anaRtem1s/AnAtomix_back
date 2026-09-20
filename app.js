@@ -1,5 +1,8 @@
 // :::::::::::::::::::::::::::::::::::::::::::::::::::::::::: MAIN APP :::::::::::::::::::::::::::::::::::::::::::::::::::::::::: 
+
+
 // USING PORT DEFINED IN ENV VARIABLE
+
 const { PORT } = process.env;
 
 // IMPORTING EXPRESS.JS && CORS
@@ -23,6 +26,11 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 // MIDDLEWARE TO GET .JSON RESPONSES (strings from body [usr input in the front-end] are translated into jSON to be readable)
 
 app.use(express.json());
+
+// CLIENT FONT
+
+const path = require('path');
+app.use('/fonts', express.static(path.join(__dirname, '../client/src/assets/fonts')));
 
 // JSDOC SWAGGER
 
@@ -51,7 +59,7 @@ db.sequelize.authenticate()
 
 db.sequelize.sync();
 
-//! ONLY IF DB REBUILD IS NEEDED// WILL DESTROY DB:
+//! ONLY IF DB REBUILD IS NEEDED => WILL DESTROY DB :)
 
 //  db.sequelize.sync( { force : true} );
 
