@@ -54,7 +54,8 @@ const accountController = {
             const accountToDelete = await accountService.getById(id);
 
             if (!accountToDelete) {
-                res.status(404).json({ status: 404, message: `No account with ID ${id}, sorry` })
+                
+               return res.status(404).json({ status: 404, message: `No account with ID ${id}, sorry` })
             }
             else {
                 const deleted = await accountService.delete(id);

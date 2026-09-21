@@ -19,7 +19,7 @@ Node.js - Express.js web (RESTful) API - server
 
 ## Swagger JS doc link:
 
-http://localhost:PORT/doc/
+http://localhost:{PORT}/doc/
 
 ## Client-side: 
 

@@ -1,7 +1,16 @@
 //! Feed URL Validator 
 
 const Parser = require('rss-parser');
-const parser = new Parser();
+
+//  BYPASSING THE 406 REJECTION - EX: PEERTUBE ASKS FOR USERAGENT 
+const parser = new Parser({
+  requestOptions: {
+    headers: {
+      'Accept': 'application/rss+xml, application/xml, text/xml; q=0.9, */*; q=0.1',
+      'User-Agent': 'AnAtomixRSSReader/1.0 (+http://localhost:5173/)'
+    }
+  }
+});
 
 // SEQUELIZE
 
@@ -9,7 +18,7 @@ const db = require('../../models/configDB.js');
 
 const parserService = {
 
-  // EXPOSING THE RAW PARSER LINK QUERY FOR THE SMART CONTROLLER TO RUN ANALYSIS NATIVELY
+  // EXPOSING THE RAW PARSER LINK QUERY FOR THE CONTROLLER TO RUN ANALYSIS NATIVELY
 
   parseURL: async (feedUrl) => {
     try {
@@ -27,12 +36,13 @@ const parserService = {
 
   syncArticlesForSource: async (feedSourceId, feedUrl) => {
     try {
-      console.log(`🤖 Bot reading RSS feed: ${feedUrl}`);
+      console.log(`Bot reading RSS feed: ${feedUrl}`);
 
-      // 1. Fetch and parse the live XML data from the internet
+      // Fetch and parse the live XML data from the internet
+
       const feedContents = await parser.parseURL(feedUrl);
 
-      // 2. Loop through every individual article item found in the feed
+      // Loop through every individual article item found in the feed
 
       for (const item of feedContents.items) {
 
@@ -46,7 +56,7 @@ const parserService = {
           continue;
         }
 
-        // 3. Prevent duplicates: Check if this article GUID already exists in our table
+        // Prevent duplicates: Check if this article GUID already exists in our table
 
         const alreadyExists = await db.feedArticle.findOne({
           where: { guid: itemGuid }
