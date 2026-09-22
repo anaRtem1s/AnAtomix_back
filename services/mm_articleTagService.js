@@ -4,7 +4,7 @@ const tagService = require("../services/tagService.js");
 
 const mm_articleTagService = {
 
-getArticleTags: async (account_id) => {
+  getArticleTags: async (account_id) => {
     try {
       // Find tags associated with the article, filtered by user ownership
       const articleTags = await db.articleTag.findAll({
@@ -16,63 +16,33 @@ getArticleTags: async (account_id) => {
     }
   },
 
-getArticleTagsByArticleId: async (account_id,article_id) => {
+  getArticleTagsByArticleId: async (account_id, article_id) => {
     try {
-      // Find tags associated with the article, filtered by user ownership
+      // join the actual tag rows for this article 
       const articleTags = await db.articleTag.findAll({
-        where: { account_id: account_id, article_id: article_id }
-      });
-      return articleTags;
-    } catch (err) {
-      throw new Error(err.message);
-    }
-  },
-
-/* THIS DOES THE JOIN WITH TAGS SO YOU GET THE ACTUAL TAGS ASSOCIATED TO AN ARTICLE
-getArticleTagsByArticleId: async (account_id,article_id) => {
-      try {
-      // Let Sequelize handle the join automatically
-      return await db.articleTag.findAll({
         where: { account_id: account_id, article_id: article_id },
-        include: [{
-          model: db.tag,
-          as: 'tag'
-        }]
-      });
-    } catch (err) {
-      throw new Error(err.message);
-    }
-  },*/
-
-getArticleTagsByTagId: async (account_id,tag_id) => {
-    try {
-      // Find tags associated with the article, filtered by user ownership
-      const articleTags = await db.articleTag.findAll({
-        where: { account_id: account_id, tag_id: tag_id }
+        include: [{ model: db.tag }] 
       });
       return articleTags;
     } catch (err) {
       throw new Error(err.message);
     }
   },
-  
-/* THIS DOES THE JOIN WITH ARTICLES SO YOU GET THE ACTUAL ARTICLES ASSOCIATED TO A TAG
-getArticleTagsByTagId: async (account_id,tag_id) => {
+
+  getArticleTagsByTagId: async (account_id, tag_id) => {
     try {
-      // Let Sequelize handle the join automatically
-      return await db.articleTag.findAll({
+      // join the actual article rows for this tag 
+      const articleTags = await db.articleTag.findAll({
         where: { account_id: account_id, tag_id: tag_id },
-        include: [{
-          model: db.feedArticle,
-          as: 'feed_article'
-        }]
+        include: [{ model: db.feedArticle }]
       });
+      return articleTags;
     } catch (err) {
       throw new Error(err.message);
     }
-  },*/
+  },
 
-getArticleTag: async (account_id,article_id,tag_id) => {
+  getArticleTag: async (account_id, article_id, tag_id) => {
     try {
       // Find tags associated with the article, filtered by user ownership
       const articleTag = await db.articleTag.findOne({
@@ -84,10 +54,10 @@ getArticleTag: async (account_id,article_id,tag_id) => {
     }
   },
 
-createArticleTag: async (account_id,article_id,tag_id) => {
+  createArticleTag: async (account_id, article_id, tag_id) => {
     try {
       const createdArticleTag = await db.articleTag.create({
-        account_id:account_id,article_id:article_id,tag_id:tag_id
+        account_id: account_id, article_id: article_id, tag_id: tag_id
       });
       return createdArticleTag;
     } catch (err) {
@@ -95,7 +65,7 @@ createArticleTag: async (account_id,article_id,tag_id) => {
     }
   },
 
-deleteArticleTag: async (account_id,article_id,tag_id) => {
+  deleteArticleTag: async (account_id, article_id, tag_id) => {
     try {
       const destroyedRows = await db.articleTag.destroy({
         where: { account_id: account_id, article_id: article_id, tag_id: tag_id }

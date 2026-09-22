@@ -19,7 +19,7 @@ const roleAuthorization = (roles /* ALLOWED ROLES (member, admin, self) */) => {
       // IF  ACCOUNT = NOT FOUND (DELETED FROM THE DB)
       
       if (!account) {
-        res.status(403).json({ status: 403, message: "You are not allowed to access this route" })
+       return res.status(403).json({ status: 403, message: "You are not allowed to access this route" }); 
       }
       else {
         // IF WE HAVE AN ACCOUNT, WE CHECK THEIR ROLE IS PART OF THE ALLOWED ROLES + CHECKING IF ACCOUNT IS STILL ACTIVE

@@ -32,50 +32,38 @@ const CreateFeedSourceSchema = z.object({
     .optional()
 });
 
+// UPDATE FEED SOURCE (ADMIN)
+
 const UpdateFeedSourceSchema = z.object({
-
-  feed_url: z.union([z.string().regex(/^(https?:\/\/)[^\s$.?#].[^\s]*$/i, 'Invalid feed URL format').max(2048), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  feed_type: z.union([z.enum(['rss', 'atom']), z.literal('')])
-    .optional(),
-
-  title: z.union([z.string().min(1).max(256), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  descr: z.union([z.string(), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  site_url: z.union([z.string().regex(/^(https?:\/\/)[^\s$.?#].[^\s]*$/i, 'Invalid site URL format').max(2048), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional()
-
-}).refine((data) => {
-  return data.feed_url || data.feed_type || data.title || data.descr || data.site_url;
-}, {
+  // omit to leave unchanged; empty string -> 400. Nullable text fields: send null to clear.
+  feed_url: z.string().regex(/^(https?:\/\/)[^\s$.?#].[^\s]*$/i, 'Invalid feed URL format').max(2048)
+    .transform(val => val.trim()).optional(),
+  feed_type: z.enum(['rss', 'atom']).optional(),
+  title: z.string().min(1).max(256).transform(val => val.trim()).optional(),
+  descr: z.string().min(1).transform(val => val.trim()).nullable().optional(),
+  site_url: z.string().regex(/^(https?:\/\/)[^\s$.?#].[^\s]*$/i, 'Invalid site URL format').max(2048)
+    .transform(val => val.trim()).nullable().optional()
+}).refine((data) => [data.feed_url, data.feed_type, data.title, data.descr, data.site_url].some(v => v !== undefined), {
   message: "At least one field must be provided to update the feed source."
 });
 
 // GENERIC MIDDLEWARE 
 
 function validateBody(schema) {
-    return (req, res, next) => {
-        const result = schema.safeParse(req.body);
+  return (req, res, next) => {
+    const result = schema.safeParse(req.body);
 
-        if (result.success) {
-            req.body = result.data;
-            next();
-        } else {
-            return res.status(400).json({
-                status: 400,
-                message: 'Invalid input',
-                details: result.error.issues
-            });
-        }
-    };
+    if (result.success) {
+      req.body = result.data;
+      next();
+    } else {
+      return res.status(400).json({
+        status: 400,
+        message: 'Invalid input',
+        details: result.error.issues
+      });
+    }
+  };
 }
 
 

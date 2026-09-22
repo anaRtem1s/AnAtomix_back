@@ -2,15 +2,15 @@
 
 // CONTROLLER IS AN OBJECT CONTAINING SEVERAL FUNCTIONS (= FEATURES) 
 
-//! TO TEST 
 
 const mm_accountArticleService = require("../services/mm_accountArticleService.js");
 
 const mm_accountArticleController = {
 
+
   // GET ALL READ / LOVED ARTICLE 
 
-  //? GET	/api/read_loved
+  //? GET␉/api/account_articles 
 
   getAll: async (req, res) => {
     try {
@@ -18,20 +18,20 @@ const mm_accountArticleController = {
       res.status(200).json(accountArticles);
     }
     catch (err) {
-      res.status(500).json({ status: 500, message: 'A server error occured while fetching read / loved articles 🐾' + err });
+      res.status(500).json({ status: 500, message: 'A server error occured while fetching favorite articles 🐾' + err });
     }
   },
 
   // GET A READ / LOVED ARTICLE BY ITS ID
 
-  //? GET	/api//read_loved/:id
+ //? GET␉/api/account_articles/:id 
 
   getById: async (req, res) => {
     try {
       const article_id = req.params.id;
       const accountArticle = await mm_accountArticleService.getById(req.account.id, article_id);
       if (!accountArticle) {
-        res.status(404).json({ status: 404, message: `No read / loved with ID ${article_id}, sorry` })
+        res.status(404).json({ status: 404, message: `No favorite status with ID ${article_id}, sorry` + err })
       }
       else {
         res.status(200).json(accountArticle);
@@ -44,8 +44,8 @@ const mm_accountArticleController = {
 
 
   // CREATE A READ / LOVED ARTICLE 
-
-  //? POST	/api//read_loved
+  
+//? POST␉/api/account_articles 
 
   create: async (req, res) => {
     try {
@@ -60,14 +60,14 @@ const mm_accountArticleController = {
         });
 
       if (!accountArticle) {
-        return res.status(404).json({ status: 404, message: `Could not create read / loved status on article, sorry` });
+        return res.status(404).json({ status: 404, message: `Could not create favorite status on article, sorry` });
       }
 
       accountArticle.message = 'read / loved article created';
       res.status(200).json({ message: 'Read / loved status on article created', 'attributes': accountArticle });
     }
     catch (err) {
-      res.status(500).json({ status: 500, message: 'A server error occured while creating  read / loved status on article 🐾: ' + err });
+      res.status(500).json({ status: 500, message: 'A server error occured while fetching favorite article 🐾' + err });
     }
   },
   // MARK AN ARTICLE AS UNREAD (Deletes the record)
@@ -114,7 +114,7 @@ const mm_accountArticleController = {
       const readFavouriteStatus = await mm_accountArticleService.toggleFavorite(accountId, articleId);
 
       if (!readFavouriteStatus) {
-        return res.status(500).json({ status: 500, message: `Failed to update read / loved status on article with ID ${articleId}` });
+        return res.status(500).json({ status: 500, message: `Failed to update favorite status on article with ID ${articleId}` });
       }
 
       res.status(200).json({

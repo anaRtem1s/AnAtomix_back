@@ -4,11 +4,8 @@ const mm_accountArticleController = require("../controllers/mm_accountArticleCon
 const authentication = require("../middlewares/authMiddleware.js");
 const roleAuthorization = require("../middlewares/roleMiddleware.js");
 
-const mm_accountArticleValidator = require("../validators/mm_accountArticleValidator.js");
-
 const mm_accountArticleRouter = require("express").Router();
 
-//! TEST VALIDATOR
 
 //  USER STATE INTERACTION ENDPOINTS (Read / Favorite Status)
 
@@ -37,7 +34,7 @@ mm_accountArticleRouter.route('/:id')
 // TOGGLE FAVORITE STATUS
 
 mm_accountArticleRouter.route('/:id/favorite')
-  .patch(authentication(), roleAuthorization(['member', 'admin']), mm_accountArticleValidator.validateUpdateArticleInteraction, mm_accountArticleController.toggleFavorite);
+  .patch(authentication(), roleAuthorization(['member', 'admin']), mm_accountArticleController.toggleFavorite); // 🤖 D2: dropped validateUpdateArticleInteraction (toggle ignores the body)
 
 //? http://localhost:PORT/api/account_articles/:id/unread
 

@@ -2,28 +2,26 @@
 
 const { z } = require('zod');
 
-// ASSIGN TAG TO ARTICLE FORM
 
-const AssignArticleTagSchema = z.object({
+const AssignArticleTagParamsSchema = z.object({
 
-    article_id: z.number({ required_error: 'Article ID is required' })
+    article_id: z.coerce.number({ required_error: 'Article ID is required' })
         .int('Article ID must be an integer')
         .positive('Article ID must be a valid positive ID'),
 
-    tag_id: z.number({ required_error: 'Tag ID is required' })
+    tag_id: z.coerce.number({ required_error: 'Tag ID is required' })
         .int('Tag ID must be an integer')
         .positive('Tag ID must be a valid positive ID')
 });
 
+// GENERIC MIDDLEWARE (PARAMS)
 
-// GENERIC MIDDLEWARE 
-
-function validateBody(schema) {
+function validateParams(schema) {
     return (req, res, next) => {
-        const result = schema.safeParse(req.body);
+        const result = schema.safeParse(req.params);
 
         if (result.success) {
-            req.body = result.data;
+            Object.assign(req.params, result.data); //  write back coerced numbers
             next();
         } else {
             return res.status(400).json({
@@ -35,7 +33,6 @@ function validateBody(schema) {
     };
 }
 
-
-const validateAssignArticleTag = validateBody(AssignArticleTagSchema);
+const validateAssignArticleTag = validateParams(AssignArticleTagParamsSchema);
 
 module.exports = { validateAssignArticleTag };

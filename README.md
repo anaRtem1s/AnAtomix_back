@@ -16,7 +16,6 @@ Node.js - Express.js web (RESTful) API - server
 
 - [node-cron](https://www.npmjs.com/package/node-cron) 
 - [rss-parser](https://www.npmjs.com/package/rss-parser)
-- DOMpurify
 
 ## Swagger JS doc link:
 

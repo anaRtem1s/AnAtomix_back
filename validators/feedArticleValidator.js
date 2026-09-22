@@ -50,44 +50,18 @@ const CreateFeedArticleSchema = z.object({
 // UPDATE FEED ARTICLE FORM
 
 const UpdateFeedArticleSchema = z.object({
-
-  guid: z.union([z.string().min(1).max(500), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  link: z.union([z.string().regex(/^(https?:\/\/)[^\s$.?#].[^\s]*$/i, 'Invalid article URL format').max(2048), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  title: z.union([z.string().min(1).max(1000), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  summary: z.union([z.string(), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  content_html: z.union([z.string(), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  author: z.union([z.string().max(500), z.literal('')])
-    .transform(val => val === '' ? '' : val.trim())
-    .optional(),
-
-  published_at: z.union([z.iso.datetime(), z.literal('')])
-    .optional(),
-
-  updated_at: z.union([z.iso.datetime(), z.literal('')])
-    .optional(),
-
-
-  feed_source_id: z.union([z.number().int().positive(), z.literal('')])
-    .optional()
-
-}).refine((data) => {
-  return data.guid || data.link || data.title || data.summary || data.content_html || data.author || data.published_at || data.updated_at || data.feed_source_id;
-}, {
+  // omit to leave unchanged; empty string -> 400. Nullable text/date fields: send null to clear.
+  guid: z.string().min(1).max(500).transform(val => val.trim()).optional(),
+  link: z.string().regex(/^(https?:\/\/)[^\s$.?#].[^\s]*$/i, 'Invalid article URL format').max(2048)
+    .transform(val => val.trim()).optional(),
+  title: z.string().min(1).max(1000).transform(val => val.trim()).optional(),
+  summary: z.string().min(1).transform(val => val.trim()).nullable().optional(),
+  content_html: z.string().min(1).transform(val => val.trim()).nullable().optional(),
+  author: z.string().min(1).max(500).transform(val => val.trim()).nullable().optional(),
+  published_at: z.iso.datetime({ message: 'Published date must be a valid ISO 8601 timestamp' }).nullable().optional(),
+  updated_at: z.iso.datetime({ message: 'Updated date must be a valid ISO 8601 timestamp' }).nullable().optional(),
+  feed_source_id: z.number().int().positive().optional()
+}).refine((data) => Object.values(data).some(v => v !== undefined), {
   message: "At least one field must be provided to update the feed article."
 });
 

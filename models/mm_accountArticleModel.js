@@ -14,11 +14,12 @@ const accountArticleBuilder = (sequelize) => {
         type: 'TIMESTAMPTZ',
         allowNull: false,
         defaultValue: sequelize.literal('NOW()')
-      },    
+      },
+
       is_favorite: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: false
       }
       // FK account_id, article_id are added in the ASSOCIATIONS step (configDB.js).
     },

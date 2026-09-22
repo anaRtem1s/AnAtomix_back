@@ -1,6 +1,5 @@
 const z = require("zod");
 
-//! TO TEST
 
 // CREATE CATEGORY FORM - validates fields coming from the user
 
@@ -11,23 +10,17 @@ const CreateCategorySchema = z.object({
         .max(255, 'Title must be 255 characters max')
         .transform(val => val.trim())
 
- //? account_id => The backend pulls from req.user 
-   
+    //? account_id => The backend pulls from req.user 
+
 });
 
 // UPDATE CATEGORY FORM
 
 const UpdateCategorySchema = z.object({
-
-    // Allow empty string OR valid title. Normalize if valid.
-    title: z.union([z.string().min(1).max(255), z.literal('')])
-        .transform(val => val === '' ? '' : val.trim())
-        .optional()
-
-}).refine((data) => {
-    // Ensure the title update actually provides a real value (not just an empty string)
-    return data.title && data.title !== '';
-}, {
+    // omit to leave unchanged; empty string -> 400.
+    title: z.string().min(1, 'Title cannot be empty').max(255, 'Title must be 255 characters max')
+        .transform(val => val.trim()).optional()
+}).refine((data) => data.title !== undefined, {
     message: "A title must be provided to update the category."
 });
 

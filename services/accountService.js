@@ -7,7 +7,7 @@ const accountService = {
     getAll: async () => {
         try {
             const accounts = await db.account.findAll(
-                { attributes: { exclude: 'passwordhash' } });
+                { attributes: { exclude: ['passwordhash'] } });
             return accounts;
         }
         catch (err) {

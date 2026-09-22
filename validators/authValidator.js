@@ -53,36 +53,18 @@ const LoginFormSchema = z.object({
 
 
 const UpdateAccountSchema = z.object({
+    //  no empty-string sentinel. Omit a field to leave it unchanged. 
 
-    // Allow empty string OR valid username. Normalize if valid.
-    username: z.union([z.string().min(3), z.literal('')])
-        .transform(val => val === '' ? '' : val.trim().toLowerCase())
-        .optional(),
-
-    // Allow empty string OR valid email. Normalize if valid.
-
-    email: z.union([z.string().regex(/^[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+$/, 'Invalid email format').max(255), z.literal('')])
-        .transform(val => val === '' ? '' : val.trim().toLowerCase())
-        .optional(),
-
-    // Allow empty string OR valid password. Trim only (case-sensitive).
-
-    newPassword: z.union([
-        z.string()
-            .min(8, 'Password must be at least 8 characters')
-            .regex(/[A-Z]/, 'Must contain an uppercase letter')
-            .regex(/[a-z]/, 'Must contain a lowercase letter')
-            .regex(/[0-9]/, 'Must contain a digit')
-            .regex(/[^A-Za-z0-9]/, 'Must contain a special character'),
-        z.literal('') // Allow empty string explicitly
-    ])
-        .transform(val => val === '' ? '' : val.trim())
-        .optional()
-}).refine((data) => {
-    // Ensure at least one field has a real value (not just empty string)
-    return data.username || data.email || data.newPassword;
-}, {
-    message: "At least one of username, email, or Password must be provided."
+    username: z.string().min(3, 'Username must be at least 3 characters').max(50, 'Username must be 50 characters max')
+        .transform(val => val.trim().toLowerCase()).optional(),
+    email: z.string().regex(/^[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+$/, 'Invalid email format').max(255)
+        .transform(val => val.trim().toLowerCase()).optional(),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters')
+        .regex(/[A-Z]/, 'Must contain an uppercase letter').regex(/[a-z]/, 'Must contain a lowercase letter')
+        .regex(/[0-9]/, 'Must contain a digit').regex(/[^A-Za-z0-9]/, 'Must contain a special character')
+        .transform(val => val.trim()).optional()
+}).refine((data) => data.username !== undefined || data.email !== undefined || data.newPassword !== undefined, {
+    message: "At least one of username, email, or password must be provided."
 });
 
 // GENERIC MIDDLEWARE : TURNS A SCHEMA INTO EXPRESS MIDDLEWARE

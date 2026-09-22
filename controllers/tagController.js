@@ -148,7 +148,7 @@ const tagController = {
   },
 
   /**
-   * DELETE /api/tag/{id}
+   * DELETE /api/tags/{id}
    * @summary Delete a tag by its ID
    * @tags Tags
    * @security BearerAuth
@@ -160,7 +160,7 @@ const tagController = {
 
   // DELETE A TAG
 
-  //? DELETE /api/tag/:id
+  //? DELETE /api/tags/:id
 
   delete: async (req, res) => {
     try {
@@ -200,7 +200,7 @@ const tagController = {
   },
 
   /**
- * PATCH /api/tag/{id}
+ * PATCH /api/tags/{id}
  * @summary Update an existing tag's details
  * @tags Tags
  * @security BearerAuth
@@ -214,7 +214,7 @@ const tagController = {
 
   // UPDATE A TAG - NOT IMPLEMENTED IN ROUTES
 
-  //? PATCH	/api/tag/:id
+  //? PATCH	/api/tags/:id
 
   update: async (req, res) => {
     try {

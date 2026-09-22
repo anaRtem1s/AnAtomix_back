@@ -18,20 +18,15 @@ const CreateTagSchema = z.object({
         .optional()
 });
 
-// UPDATE TAG FORM - Only look for fields the user can actually toggle in the UI.
-const UpdateTagSchema = z.object({
-    title: z.union([z.string().min(1).max(256), z.literal('')])
-        .transform(val => val === '' ? '' : val.trim())
-        .optional(),
+// UPDATE TAG FORM 
 
-    color: z.union([
-        z.string().max(32).regex(/^#([A-Fa-f0-9]{3,8})$|^rgba?\(.+\)$/, 'Invalid color format'),
-        z.literal('')
-    ])
-        .transform(val => val === '' ? '' : val.trim())
-        .nullable()
-        .optional()
-}).refine((data) => data.title || data.color, {
+const UpdateTagSchema = z.object({
+    //  omit to leave unchanged; empty string -> 400.
+    title: z.string().min(1).max(256).transform(val => val.trim()).optional(),
+    //  color is clearable -> send null to clear; '' -> 400.
+    color: z.string().max(32).regex(/^#([A-Fa-f0-9]{3,8})$|^rgba?\(.+\)$/, 'Invalid color format')
+        .transform(val => val.trim()).nullable().optional()
+}).refine((data) => data.title !== undefined || data.color !== undefined, {
     message: "At least one of title or color must be provided."
 });
 

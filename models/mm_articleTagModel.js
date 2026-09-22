@@ -9,13 +9,14 @@ const articleTagBuilder = (sequelize) => {
   const articleTag = sequelize.define(
     'mm_article_tag',
     {
-      // PK (article_id, tag_id) is by belongsToMany(...) in the ASSOCIATIONS step (configDB.js).
+      account_id: { type: DataTypes.INTEGER, primaryKey: true },
+      article_id: { type: DataTypes.INTEGER, primaryKey: true },
+      tag_id: { type: DataTypes.INTEGER, primaryKey: true },
       assigned_at: {
         type: 'TIMESTAMPTZ',
         allowNull: false,
         defaultValue: sequelize.literal('NOW()')
       }
-      // FK article_id, tag_id are added in the ASSOCIATIONS step (configDB.js).
     },
     {
       tableName: 'mm_article_tag',

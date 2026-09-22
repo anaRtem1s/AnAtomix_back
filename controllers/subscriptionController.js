@@ -2,7 +2,6 @@
 
 // CONTROLLER IS AN OBJECT CONTAINING SEVERAL FUNCTIONS (= FEATURES) 
 
-//! TO CHECK
 
 const subscriptionService = require("../services/subscriptionService.js");
 
@@ -158,7 +157,7 @@ const subscriptionController = {
   },
 
   /**
- * DELETE /api/subscription/{id}
+ * DELETE /api/subscriptions/{id}
  * @summary Delete a subscription by its ID
  * @tags Subscriptions
  * @security BearerAuth
@@ -170,7 +169,7 @@ const subscriptionController = {
 
   // DELETE A SUBSCRIPTION
 
-  //? DELETE /api/subscription/:id
+  //? DELETE /api/subscriptions/:id
 
   delete: async (req, res) => {
     try {
@@ -209,7 +208,7 @@ const subscriptionController = {
     }
   },
   /**
-     * PATCH /api/subscription/{id}
+     * PATCH /api/subscriptions/{id}
      * @summary Update an existing subscription's category association
      * @tags Subscriptions
      * @security BearerAuth
@@ -223,7 +222,7 @@ const subscriptionController = {
 
   // UPDATE A SUBSCRIPTION
 
-  //? PATCH	/api/subscription/:id
+  //? PATCH	/api/subscriptions/:id
 
   update: async (req, res) => {
     try {

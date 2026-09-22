@@ -64,7 +64,7 @@ const feedSourceController = {
    */
 
   /**
-   * GET /api/feed-sources
+   * GET /api/feed_sources
    * @summary Get all global feed sources (Catalogue)
    * @tags Feed Sources
    * @security BearerAuth
@@ -85,7 +85,7 @@ const feedSourceController = {
   },
 
   /**
-   * GET /api/feed-sources/{id}
+   * GET /api/feed_sources/{id}
    * @summary Get a specific feed source by its ID
    * @tags Feed Sources
    * @security BearerAuth
@@ -116,7 +116,7 @@ const feedSourceController = {
   },
 
   /**
-   * POST /api/feed-sources
+   * POST /api/feed_sources
    * @summary Create a global shared feed source entry
    * @tags Feed Sources
    * @security BearerAuth
@@ -179,7 +179,7 @@ const feedSourceController = {
   },
 
   /**
-   * DELETE /api/feed-sources/{id}
+   * DELETE /api/feed_sources/{id}
    * @summary Delete a feed source entry from the global catalogue
    * @tags Feed Sources
    * @security BearerAuth
@@ -229,7 +229,7 @@ const feedSourceController = {
   },
 
   /**
-   * PATCH /api/feed-sources/{id}
+   * PATCH /api/feed_sources/{id}
    * @summary Update an active feed source definition
    * @tags Feed Sources
    * @security BearerAuth

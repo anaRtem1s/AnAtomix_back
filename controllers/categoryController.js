@@ -130,7 +130,7 @@ const categoryController = {
 
   // DELETE A CATEGORY 
 
-  //? DELETE /api/category/:id
+  //? DELETE /api/categories/:id
 
   delete: async (req, res) => {
     try {
@@ -185,7 +185,7 @@ const categoryController = {
 
   // UPDATE A CATEGORY 
 
-  //? PATCH	/api/category/:id
+  //? PATCH	/api/categories/:id
 
   update: async (req, res) => {
     try {

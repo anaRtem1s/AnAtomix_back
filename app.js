@@ -69,6 +69,14 @@ db.sequelize.sync();
 const router = require("./routes");
 app.use('/api', router);
 
+// centralized error handler - Controllers can `next(err)` (or throw in sync code) to reach this.
+
+app.use((err, req, res, next) => {
+    console.error('💥 Unhandled error:', err);
+    const status = err.status || 500;
+    res.status(status).json({ status, message: 'A server error occurred' });
+});
+
 // CRON SERVICE
 
 require('./services/refresh/cronService.js');
